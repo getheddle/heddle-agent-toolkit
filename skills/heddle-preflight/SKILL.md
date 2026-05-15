@@ -93,6 +93,44 @@ swift test
 # plus signing/notarization checks for release builds
 ```
 
+## CHANGELOG check
+
+For repos that maintain a `CHANGELOG.md` (heddle, heddle-sdk,
+heddle-agent-toolkit), verify the `[Unreleased]` section has at least
+one categorized entry when the staged diff touches behaviour-bearing
+paths. Behaviour-bearing means:
+
+- `src/`, `dotnet/src/`, `swift/Sources/`, `swift-nats/Sources/` —
+  code that ships.
+- `configs/workers/*.yaml`, `configs/orchestrators/*.yaml`, public
+  schemas under `schemas/v1/` — user-facing contract.
+- Skills, anchors, or subagents under `skills/`, `anchors/`, `agents/`
+  in the toolkit.
+
+Exempt: `docs/**.md`, `README.md`, `tests/`, `.github/`, internal
+refactors with no user-visible delta. Don't fail-flag exempt diffs.
+
+Mechanically (run from repo root):
+
+```bash
+# Has the diff touched behaviour-bearing paths?
+git diff --staged --name-only | grep -E \
+    '^(src/|dotnet/src/|swift/Sources/|swift-nats/Sources/|configs/workers/|configs/orchestrators/|schemas/v1/|skills/|anchors/|agents/)' \
+    && BEHAVIOUR_CHANGE=1 || BEHAVIOUR_CHANGE=0
+
+# If yes, does [Unreleased] have any categorized entries?
+if [[ $BEHAVIOUR_CHANGE = 1 ]] && [[ -f CHANGELOG.md ]]; then
+    awk '/^## \[Unreleased\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md \
+        | grep -E '^### (Added|Changed|Deprecated|Removed|Fixed|Security)$' \
+        > /dev/null || echo "warning: behaviour change but no Unreleased entry in CHANGELOG.md"
+fi
+```
+
+A missing CHANGELOG entry is a warning, not a hard block — author can
+judge whether the change is exempt (e.g., a refactor whose paths
+touched `src/` but whose behaviour is unchanged). Prompt the user
+before letting the commit proceed without an entry.
+
 ## Cross-repo changes
 
 If your change touches more than one repo:
@@ -102,6 +140,8 @@ If your change touches more than one repo:
    `/heddle-contract-sync` from `heddle-sdk/`.
 3. Confirm docs were updated in the same change set (in each repo where
    docs reference the changed behavior).
+4. Each affected repo's `CHANGELOG.md` gets its own `[Unreleased]`
+   entry — entries don't cross repo boundaries.
 
 ## Output format
 
@@ -112,8 +152,9 @@ Preflight: <repo-name>
   pytest:       <pass|fail (N failed, M skipped)>
   schema sync:  <pass|fail|n/a>
   docs build:   <pass|fail>
+  CHANGELOG:    <pass|warn (behaviour change, no Unreleased entry)|n/a>
 Result: <PASS | FAIL>
 ```
 
 If FAIL, do not commit. Report the failing step's first error to the
-user and stop.
+user and stop. If CHANGELOG is `warn`, prompt the user; don't auto-fail.

@@ -98,3 +98,27 @@ toolkit:
 
 Avoid duplication. When you would write the same paragraph in two repos,
 move it into a toolkit anchor and replace the duplicates with pointers.
+
+## CHANGELOG discipline (cross-cutting)
+
+Each `getheddle/*` repo that produces released artifacts maintains a
+`CHANGELOG.md` at its root in
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format:
+
+| Repo | CHANGELOG | Notes |
+|---|---|---|
+| `heddle` | yes — root `CHANGELOG.md` | Backfilled from v0.9.2 release notes. |
+| `heddle-sdk` | yes — root `CHANGELOG.md` | `[Unreleased]` only until first tag. |
+| `heddle-agent-toolkit` | yes — root `CHANGELOG.md` | Skill/anchor changes are behaviour for agent consumers. |
+| `warp-design` | **no** — uses `EVOLUTION_LOG.md` instead | Design-only repo; no behaviour to changelog. ADRs serve as the durable decision log. |
+| `getheddle.github.io` | no | Single-page landing site. |
+
+Adding, changing, deprecating, removing, or fixing user-facing
+behaviour requires an entry under `[Unreleased]` in the relevant
+repo's `CHANGELOG.md`. Documentation-only, refactor-without-behavioural-
+delta, and CI-only commits are exempt. Each affected repo's
+`AGENTS.md` review checklist includes this rule.
+
+The toolkit's `/heddle-preflight` skill checks for an `Unreleased`
+section with at least one categorized entry when commits touch
+behaviour-bearing paths.

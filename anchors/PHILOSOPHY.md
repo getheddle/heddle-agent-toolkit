@@ -109,6 +109,17 @@ products with their own conventions.
 If you change behavior, update the docs in the same PR. If you can't,
 the change isn't ready.
 
+**Behaviour changes also require a `CHANGELOG.md` entry.** Each
+released-artifact-producing repo in the family (`heddle`,
+`heddle-sdk`, `heddle-agent-toolkit`) maintains a
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) at its root.
+Adding, changing, deprecating, removing, or fixing user-facing
+behaviour requires an entry under `[Unreleased]` in the relevant
+repo. Documentation-only changes, internal refactors with no
+behavioural delta, and CI-only commits are exempt. `warp-design` uses
+`EVOLUTION_LOG.md` and numbered ADRs in `decisions/` for the same
+purpose, since it produces no released artifacts.
+
 ### 9. License: MPL 2.0, intentionally
 
 Modified source files must remain open. Unmodified files can be combined
