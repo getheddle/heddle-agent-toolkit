@@ -1,21 +1,38 @@
 #!/usr/bin/env bash
-# install.sh — link toolkit skills and agents into a target repo's .claude/
+# install.sh — link toolkit skills and agents into a target's .claude/
 #
 # Usage:
-#   ./install.sh <target-repo-path>
+#   ./install.sh <target-repo-path>            # single-repo install
+#   ./install.sh --workspace <workspace-path>  # workspace install
 #
-# Creates symlinks inside <target>/.claude/skills/ and <target>/.claude/agents/
-# pointing back into this toolkit. The target repo's existing
-# .claude/settings.json and .claude/commands/ are left untouched.
+# Single-repo mode (default): creates symlinks inside
+# <target>/.claude/skills/ and <target>/.claude/agents/ pointing back
+# into this toolkit. The target's existing .claude/settings.json and
+# .claude/commands/ are left untouched.
 #
-# Idempotent: re-running replaces existing toolkit-owned symlinks but does
-# not touch entries that are not toolkit symlinks (so repo-local agents
-# and commands survive).
+# Workspace mode (--workspace): same symlink install, plus drops a
+# starter workspace-level AGENTS.md and a starter <workspace-name>.code-
+# workspace file if neither exists yet. Use this when the target is a
+# parent directory holding the Heddle family repos and consuming apps
+# as flat siblings. See anchors/WORKSPACE.md for the convention.
+#
+# Idempotent: re-running replaces existing toolkit-owned symlinks but
+# does not touch entries that are not toolkit symlinks. Workspace
+# extras (AGENTS.md, .code-workspace) are only created when absent; an
+# existing file is never overwritten.
 
 set -euo pipefail
 
+mode="repo"
+if [[ "${1:-}" == "--workspace" ]]; then
+    mode="workspace"
+    shift
+fi
+
 if [[ $# -ne 1 ]]; then
-    echo "usage: $0 <target-repo-path>" >&2
+    echo "usage:" >&2
+    echo "  $0 <target-repo-path>            # single-repo install" >&2
+    echo "  $0 --workspace <workspace-path>  # workspace install" >&2
     exit 2
 fi
 
@@ -80,14 +97,101 @@ link_dir() {
     done
 }
 
-echo "Installing heddle-agent-toolkit into $target_abs"
+install_workspace_extras() {
+    local ws="$1"
+    local ws_name
+    ws_name="$(basename "$ws")"
+    local agents_md="$ws/AGENTS.md"
+    local code_ws="$ws/${ws_name}.code-workspace"
+
+    # Workspace-level AGENTS.md (created only if absent).
+    if [[ ! -e "$agents_md" ]]; then
+        cat > "$agents_md" <<EOF
+# AGENTS.md — $ws_name (Heddle workspace)
+
+This directory is a **Heddle workspace** — a parent directory holding
+the [getheddle/*](https://github.com/getheddle) family repositories
+and one or more consuming applications as flat siblings.
+
+## Shared agent guidance
+
+Cross-repo invariants, philosophy, schema source-of-truth direction,
+and reusable skills/subagents live in
+[\`heddle-agent-toolkit/\`](heddle-agent-toolkit/). The toolkit's
+skills and subagents are symlinked into this workspace's \`.claude/\`,
+so any Claude Code session started at the workspace root has access
+to them.
+
+If you are an AI agent, your first step is to invoke
+\`/heddle-orient\`.
+
+## Workspace-level vs. repo-level
+
+| Workspace root (here) | Each sibling repo |
+|---|---|
+| \`.claude/\` with toolkit skills + subagents | \`.claude/\` with repo-local commands |
+| Cross-cutting design docs and specs that span repos | Repo-internal docs |
+| This \`AGENTS.md\` | Each repo's own \`AGENTS.md\` |
+
+For repo-specific verification commands and module layout, read the
+relevant sibling's own \`AGENTS.md\`.
+
+## VSCode
+
+Open \`${ws_name}.code-workspace\` for a multi-root view of the
+siblings.
+
+## Convention reference
+
+\`heddle-agent-toolkit/anchors/WORKSPACE.md\` — the technical
+reference for workspace detection, cross-repo git conventions, and
+path conventions.
+EOF
+        echo "wrote:   AGENTS.md"
+    else
+        echo "skip:    AGENTS.md (exists)"
+    fi
+
+    # <workspace-name>.code-workspace (created only if absent). Folders
+    # list = "." first, then every immediate-child directory that is a
+    # git repo. Hidden dirs and non-git dirs are skipped.
+    if [[ ! -e "$code_ws" ]]; then
+        local folders
+        folders='    {"path": "."}'
+        local entry
+        for entry in "$ws"/*/; do
+            [[ -d "$entry/.git" ]] || continue
+            local name
+            name="$(basename "$entry")"
+            folders="$folders,
+    {\"path\": \"$name\"}"
+        done
+        cat > "$code_ws" <<EOF
+{
+  "folders": [
+$folders
+  ],
+  "settings": {}
+}
+EOF
+        echo "wrote:   ${ws_name}.code-workspace"
+    else
+        echo "skip:    ${ws_name}.code-workspace (exists)"
+    fi
+}
+
+echo "Installing heddle-agent-toolkit into $target_abs ($mode mode)"
 echo "  toolkit root: $toolkit_root"
 echo
 
 link_dir skills
 link_dir agents
 
+if [[ "$mode" == "workspace" ]]; then
+    install_workspace_extras "$target_abs"
+fi
+
 echo
 echo "Done. Next:"
-echo "  - Restart the Claude Code session in the target repo so it rescans .claude/."
+echo "  - Restart the Claude Code session in the target so it rescans .claude/."
 echo "  - Try /heddle-orient to verify discovery."

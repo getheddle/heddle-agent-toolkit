@@ -17,6 +17,22 @@ format model.
 
 ### Added
 
+- `install.sh --workspace <path>` mode — same symlink install as
+  single-repo mode, plus drops a starter workspace-level `AGENTS.md`
+  and a starter `<workspace-name>.code-workspace` if neither exists.
+  The `.code-workspace` `folders` list auto-discovers immediate-child
+  git repositories. Files are only created when absent; re-running is
+  safe. Single-repo mode (`./install.sh <repo>`) is unchanged.
+- `README.md` — new "Getting started" section documenting the three
+  user journeys (greenfield, adopt-existing, join-existing) for
+  Heddle-based projects. Each path is three plain commands
+  (`git clone heddle`, `git clone heddle-agent-toolkit`,
+  `install.sh --workspace .`) rather than a bootstrap wrapper —
+  fewer abstractions to learn or trust. Includes VSCode multi-root
+  notes based on the existing user pattern and a status disclaimer
+  framing the workspace convention as the *recommended* pattern that
+  the toolkit is moving toward (CLI subcommands and manifest tooling
+  intentionally deferred).
 - `anchors/WORKSPACE.md` — new shared anchor defining the **Heddle
   workspace** convention: a parent directory holding `getheddle/*`
   repos and consuming apps as flat siblings, with optional
