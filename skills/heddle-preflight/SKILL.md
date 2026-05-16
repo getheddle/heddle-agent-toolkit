@@ -5,11 +5,21 @@ description: Repo-aware pre-commit verification for any getheddle/* repo. Runs l
 
 # /heddle-preflight — verify before commit
 
-Detect which `getheddle/*` repo you are in by the presence of marker
-files and run the appropriate verification suite. Report a single
-pass/fail at the end with per-step results.
+Detect which `getheddle/*` repo you are in (or whether you are at a
+workspace root) and run the appropriate verification suite. Report a
+single pass/fail at the end with per-step results.
 
 ## Detection
+
+First, apply the workspace check from
+`heddle-agent-toolkit/anchors/WORKSPACE.md`. Then:
+
+- **Workspace mode** (`cwd` is the workspace root): preflight runs
+  per-sibling. By default, only run preflight in repos whose
+  `git diff --staged` (or `git diff`) is non-empty — preflighting
+  unchanged repos wastes time. Override with explicit user request
+  ("preflight all repos in the workspace").
+- **Single-repo mode** — detect which getheddle/* repo by marker file:
 
 | Marker | Repo |
 |---|---|
@@ -19,6 +29,13 @@ pass/fail at the end with per-step results.
 | `Package.swift` + `Sources/Warp` (eventually) | `warp` (planned) |
 
 If detection is ambiguous, ask the user.
+
+App-level repos (e.g., `baft`) have their own preflight conventions
+defined in their own `AGENTS.md` (typically `<app> preflight` as a CLI
+subcommand). When workspace-mode preflight detects a changed app
+sibling, run the app's documented preflight if the `AGENTS.md` defines
+one; otherwise note that the sibling has changes but no defined
+preflight and skip rather than guess.
 
 ## heddle (Python)
 
@@ -145,6 +162,8 @@ If your change touches more than one repo:
 
 ## Output format
 
+Single-repo mode:
+
 ```
 Preflight: <repo-name>
   ruff:         <pass|fail>
@@ -156,5 +175,25 @@ Preflight: <repo-name>
 Result: <PASS | FAIL>
 ```
 
+Workspace mode (one block per changed sibling, then a workspace verdict):
+
+```
+Preflight: heddle
+  ruff:         pass
+  pyright:      pass
+  pytest:       pass (0 failed, 12 skipped)
+  ...
+Result: PASS
+
+Preflight: heddle-sdk
+  schema sync:  fail (downstream behind upstream)
+  ...
+Result: FAIL
+
+Workspace: FAIL (heddle-sdk schema sync)
+```
+
 If FAIL, do not commit. Report the failing step's first error to the
 user and stop. If CHANGELOG is `warn`, prompt the user; don't auto-fail.
+In workspace mode, the workspace verdict is FAIL if any sibling's
+preflight is FAIL.

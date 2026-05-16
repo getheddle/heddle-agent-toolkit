@@ -11,18 +11,23 @@ the wire protocol, you must be oriented against the anchors below.
 
 In this order:
 
-1. **[`anchors/ECOSYSTEM.md`](anchors/ECOSYSTEM.md)** — how the repos
+1. **[`anchors/WORKSPACE.md`](anchors/WORKSPACE.md)** — workspace
+   detection, sibling layout, cross-repo git convention, path
+   convention. Apply the detection check first; the rest of the
+   anchors and your behavior depend on whether you are in workspace
+   mode or single-repo mode.
+2. **[`anchors/ECOSYSTEM.md`](anchors/ECOSYSTEM.md)** — how the repos
    relate, what each one owns, what is downstream.
-2. **[`anchors/PHILOSOPHY.md`](anchors/PHILOSOPHY.md)** — who Heddle is for
+3. **[`anchors/PHILOSOPHY.md`](anchors/PHILOSOPHY.md)** — who Heddle is for
    and which trade-offs are intentional. Drift starts here.
-3. **[`anchors/INVARIANTS.md`](anchors/INVARIANTS.md)** — the
+4. **[`anchors/INVARIANTS.md`](anchors/INVARIANTS.md)** — the
    non-negotiable rules. Points to `heddle/docs/DESIGN_INVARIANTS.md` for
    framework-internal invariants; adds the cross-repo ones.
-4. **[`anchors/CONTRACT_MAP.md`](anchors/CONTRACT_MAP.md)** — where the
+5. **[`anchors/CONTRACT_MAP.md`](anchors/CONTRACT_MAP.md)** — where the
    schema source-of-truth lives and how changes flow across languages.
 
 If you are in a session that crosses repository boundaries (e.g., changing
-a Pydantic message in `heddle` that affects `heddle-sdk`), all four
+a Pydantic message in `heddle` that affects `heddle-sdk`), all five
 anchors are required reading.
 
 ## How to use this toolkit

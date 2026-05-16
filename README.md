@@ -22,6 +22,7 @@ This repository exists so that AI coding assistants working in any
 |---|---|
 | `AGENTS.md` | Canonical agent instructions. Read first. |
 | `CLAUDE.md` | Claude-specific thin pointer to `AGENTS.md`. |
+| `anchors/WORKSPACE.md` | Workspace layout, detection, cross-repo git + path conventions. |
 | `anchors/ECOSYSTEM.md` | Map of `getheddle/*` repos and how they relate. |
 | `anchors/PHILOSOPHY.md` | Design opinions: who Heddle is for, what trade-offs are intentional. |
 | `anchors/INVARIANTS.md` | Pointer to `heddle/docs/DESIGN_INVARIANTS.md` + cross-repo invariants. |

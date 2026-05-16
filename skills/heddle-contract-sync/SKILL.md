@@ -9,6 +9,13 @@ The wire-protocol source of truth is `heddle.core.messages` (Pydantic
 models) in the `heddle` repo. Schemas flow outward via
 `heddle-sdk/tools/sync_schemas.py`. Everything else is downstream.
 
+This skill assumes both `heddle/` and `heddle-sdk/` are checked out as
+siblings — the workspace layout. See
+`heddle-agent-toolkit/anchors/WORKSPACE.md`. Run from the workspace
+root or from inside either sibling; the skill changes directory as
+needed. If `heddle-sdk/` is not checked out, the skill cannot run —
+ask the user to clone it as a sibling.
+
 ## When to invoke
 
 - After editing `heddle/src/heddle/core/messages.py`.

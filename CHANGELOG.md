@@ -15,6 +15,27 @@ format model.
 
 ## [Unreleased]
 
+### Added
+
+- `anchors/WORKSPACE.md` — new shared anchor defining the **Heddle
+  workspace** convention: a parent directory holding `getheddle/*`
+  repos and consuming apps as flat siblings, with optional
+  `.heddle-workspace.yaml` manifest, workspace-level `.claude/`, and
+  workspace-level `AGENTS.md`. Documents the detection heuristic
+  (manifest → marker repos → single-repo fallback), the cross-repo
+  git convention (walk siblings, union diffs), and the path
+  convention (workspace-relative `<repo>/<path>` for cross-repo
+  output, repo-relative otherwise). All other agents and skills point
+  here rather than duplicating the convention.
+- `skills/heddle-orient/SKILL.md` "rules to keep in mind" list grew
+  from three to four items; progressive disclosure is now a top-level
+  orientation rule alongside upstream-source-of-truth, statelessness,
+  and solo/SMB orientation.
+- `skills/heddle-new-worker/SKILL.md` adds an explicit step on
+  scaffolding sensible, inspectable defaults in the worker YAML —
+  every optional field should have a default the user can read,
+  preferably with a one-line comment explaining *why* that default.
+
 ### Changed
 
 - `anchors/PHILOSOPHY.md` §3 broadened from "Zero-config UX is the
@@ -27,17 +48,40 @@ format model.
   inspectability-failure anti-pattern ("hide the decision in code and
   document it in the docstring") and re-frames the zero-config
   anti-pattern in the new vocabulary.
-
-### Added
-
-- `skills/heddle-orient/SKILL.md` "rules to keep in mind" list grew
-  from three to four items; progressive disclosure is now a top-level
-  orientation rule alongside upstream-source-of-truth, statelessness,
-  and solo/SMB orientation.
-- `skills/heddle-new-worker/SKILL.md` adds an explicit step on
-  scaffolding sensible, inspectable defaults in the worker YAML —
-  every optional field should have a default the user can read,
-  preferably with a one-line comment explaining *why* that default.
+- `AGENTS.md` and `README.md` — `anchors/WORKSPACE.md` added to the
+  "Read first" list as item 1; detection of workspace vs. single-repo
+  is now a precondition for the rest of the toolkit's behavior.
+- `agents/heddle-architect.md` — workspace-aware. Reads `WORKSPACE.md`
+  in step 0 of context; the plan template gains an *App-level impact*
+  section (framework changes that strand a consuming app's configs
+  are half-landed); explicit workspace-relative path convention in
+  output; spawn pattern handles workspace-root spawns with no specific
+  starting repo named.
+- `agents/heddle-invariant-guard.md` — workspace-aware. *Workspace
+  context* preamble; review step 1 walks every git-controlled sibling
+  in workspace mode and unions the diffs; new direction rule
+  *Framework → app coherence* catches half-landed framework changes
+  that don't update consuming-app configs in the same change set;
+  output format gains per-repo grouping (`Repo: <name>` blocks) when
+  reporting on cross-repo diffs.
+- `agents/heddle-contract-reviewer.md` — workspace-aware. *Workspace
+  context* preamble: looks in both `heddle/` and `heddle-sdk/`
+  siblings without being asked when both are checked out; degrades
+  gracefully to single-repo with a noted limitation when only one is
+  available; explicit workspace-relative path convention; app-level
+  siblings (e.g., `baft`) declared out of scope.
+- `skills/heddle-orient/SKILL.md` — first step is now workspace
+  detection; summary template has separate single-repo and workspace
+  variants; `WORKSPACE.md` added to the "read deeper" table.
+- `skills/heddle-preflight/SKILL.md` — workspace-aware. Workspace mode
+  preflights only changed siblings by default (no wasted work on
+  unchanged repos); app-level siblings handled per their own
+  `AGENTS.md` (typically `<app> preflight` CLI subcommand) rather than
+  guessed; output format gains per-repo blocks plus a workspace
+  verdict.
+- `skills/heddle-contract-sync/SKILL.md` — short preamble noting the
+  skill assumes the workspace sibling layout, with the failure mode
+  if `heddle-sdk/` is not checked out.
 
 ## [0.1.0] — 2026-05-15
 

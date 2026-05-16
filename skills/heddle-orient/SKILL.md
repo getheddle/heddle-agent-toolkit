@@ -10,6 +10,23 @@ Use this skill when you start (or resume) a session that touches any
 docs every time. If something here is unclear, *then* read the linked
 anchor.
 
+## First: detect workspace vs. single-repo
+
+Apply the detection check from
+`heddle-agent-toolkit/anchors/WORKSPACE.md`:
+
+- `.heddle-workspace.yaml` at `cwd` or any ancestor → **workspace mode**;
+  that file's directory is the workspace root.
+- Otherwise: `cwd` (or an ancestor) contains both `heddle/` and
+  `heddle-agent-toolkit/` as immediate children → **workspace mode**;
+  that directory is the workspace root.
+- Otherwise: **single-repo mode** — you're inside one getheddle/* repo
+  cloned alone, or in a non-workspace context.
+
+In workspace mode, list the siblings present (which getheddle/* repos
+are checked out, which apps, which data peers). In single-repo mode,
+state which repo you're in.
+
 ## The ecosystem (one screen)
 
 ```text
@@ -61,6 +78,7 @@ getheddle.github.io           org-level overview site (planned → getheddle.dev
 | Touch wire-protocol or schema files | `anchors/CONTRACT_MAP.md`, `anchors/INVARIANTS.md` |
 | Design a new feature | `anchors/PHILOSOPHY.md` |
 | Work in heddle-sdk | `heddle-sdk/AGENTS.md` |
+| Work across siblings from the workspace root | `anchors/WORKSPACE.md` |
 | Write a warp ADR | `warp-design/decisions/` (existing ADRs as format reference) |
 
 ## Which subagent for what
@@ -73,12 +91,17 @@ getheddle.github.io           org-level overview site (planned → getheddle.dev
 
 ## What to actually do now
 
-1. State which repo you are in and what you're about to touch.
+1. State whether you're in workspace mode or single-repo mode, and what
+   you're about to touch. In workspace mode, list the siblings present.
 2. If the change is multi-repo (e.g., a schema change), invoke
    `/heddle-contract-sync` before committing in either repo.
 3. If you are unsure which invariants apply, invoke `/heddle-invariants`.
 
 Output a short summary back to the user once oriented:
 
-> "Oriented. Working in `<repo>`. The relevant anchors are
+> Single-repo: "Oriented. Working in `<repo>`. The relevant anchors are
 > `<list>`. Next step: `<what you propose>`."
+
+> Workspace: "Oriented. Workspace `<name>` with siblings `<list>`. About
+> to touch `<repos>`. The relevant anchors are `<list>`. Next step:
+> `<what you propose>`."
