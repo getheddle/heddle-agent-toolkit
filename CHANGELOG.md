@@ -17,6 +17,17 @@ format model.
 
 ### Added
 
+- `anchors/CONTRACT_MAP.md` "Control subjects" section — documents
+  the `heddle.control.*` subject family as deliberately separate
+  from the actor envelope family (`TaskMessage` / `TaskResult` /
+  `OrchestratorGoal`). Reserved-subjects table lists today's only
+  control subject (`heddle.control.reload` with raw-dict payload
+  `{"action": "reload"}`), explains why no typed envelope today
+  (one subject, one payload, typed envelope's cost exceeds its
+  value), and lists the steps to promote to a typed
+  `ControlMessage` if the control plane grows. Resolves
+  Invariant-audit W2 — previously the raw-dict shape was implicit;
+  now it's a documented convention with a clear promotion path.
 - `anchors/CONTRACT_MAP.md` "Reserved middleware lane" section —
   formalizes the **underscore-prefix wire-key convention** that
   separates the typed application contract (Pydantic models +

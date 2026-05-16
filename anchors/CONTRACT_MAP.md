@@ -66,6 +66,57 @@ distinct queue-group names mean Python and foreign processors form
 separate consumer pools and the router can be informed by deployment
 which kind is available.
 
+## Control subjects
+
+Control subjects carry **out-of-band signals to running actors** —
+hot-reload broadcasts, future shutdown signals, future health pings.
+They are deliberately separate from the actor envelope family
+(`TaskMessage` / `TaskResult` / `OrchestratorGoal`):
+
+| | Actor envelopes | Control subjects |
+|---|---|---|
+| Subject prefix | `heddle.tasks.*`, `heddle.results.*`, `heddle.goals.*` | `heddle.control.*` |
+| Payload | Typed Pydantic models, schema-declared | Currently raw dicts; not in `schemas/v1/` |
+| Validated by | `core.contracts` shallow validation | Publisher discipline — no validator runs |
+| Direction | Actor-to-actor | Control plane → actors (fanout) |
+
+### Reserved control subjects today
+
+| Subject | Payload shape (today) | Owner | Notes |
+|---|---|---|---|
+| `heddle.control.reload` | `{"action": "reload"}` (raw dict, not validated) | `heddle.workshop.app_manager` (`notify_reload`) | Best-effort fanout; receivers (any `BaseActor`) call `on_reload()` (default no-op). |
+
+### Why no schema today
+
+The control plane is exactly one subject with one payload shape. A
+typed `ControlMessage` envelope is the right move *if and when* the
+control plane grows beyond one or two signals — at that point the
+typo-cost and the cost of "publisher discipline" exceed the cost of
+maintaining a typed envelope. Until then the raw-dict shape is
+deliberately lightweight; receivers branch on `data.get("action")`
+without claiming the wire contract is typed.
+
+### When to promote to a typed envelope
+
+If you add a second control signal that needs structured fields
+(e.g. a `{"action": "shutdown", "grace_seconds": 10}` or a
+`{"action": "health_ping", "request_id": "..."}`), promote the
+control payload to a Pydantic envelope at that point. Steps:
+
+1. Add `ControlMessage` to `heddle.core.messages` with `action: str`
+   plus per-action fields as a discriminated union (or open
+   metadata dict).
+2. Export the schema via `tools/export_schemas.py`.
+3. Update publishers (`workshop/app_manager.py:notify_reload` and
+   peers) to construct + validate `ControlMessage` instances.
+4. Update `BaseActor._run_control_listener` to parse via the
+   envelope's `model_validate`.
+5. Vendor downstream into `heddle-sdk` and update SDK `Subjects`
+   helpers if foreign actors will subscribe to control too.
+
+Today this is **deliberately deferred** — the control plane hasn't
+demonstrated the growth that justifies the typed-envelope cost.
+
 ## Reserved middleware lane: underscore-prefixed wire keys
 
 The wire envelope has two addressable surfaces:
