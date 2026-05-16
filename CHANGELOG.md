@@ -15,6 +15,30 @@ format model.
 
 ## [Unreleased]
 
+### Added
+
+- `anchors/CONTRACT_MAP.md` "Reserved middleware lane" section —
+  formalizes the **underscore-prefix wire-key convention** that
+  separates the typed application contract (Pydantic models +
+  `schemas/v1/`) from the middleware lane (`_`-prefixed keys
+  injected by tagged middleware modules like `heddle.tracing.otel`).
+  Replaces the previous one-paragraph "Trace context" note. Defines:
+  reserved keys table (today: `_trace_context`); rules for Pydantic
+  models, JSON schemas, middleware modules, and SDKs; enforcement
+  layers (lint, tests, doc). Resolves the audit-question of how to
+  handle wire fields that live on the envelope today but aren't in
+  the typed contract (Invariant audit M2 / Q1 in
+  `INVARIANT_AUDIT_2026-05-15.md`) via approach (A) — convention +
+  enforcement rather than hoisting individual fields into the
+  schema. Pattern matches modern messaging stacks (HTTP body vs
+  traceparent header; Kafka body vs headers; gRPC message vs
+  metadata; CloudEvents typed vs extensions map). Companion lint
+  script and tests live in
+  [`heddle/tools/check_envelope_convention.py`](https://github.com/getheddle/heddle/blob/main/tools/check_envelope_convention.py)
+  and
+  [`heddle/tests/test_envelope_convention.py`](https://github.com/getheddle/heddle/blob/main/tests/test_envelope_convention.py)
+  (heddle commit `52ade19`).
+
 ### Changed
 
 - `agents/heddle-contract-reviewer.md` — sharpened after first

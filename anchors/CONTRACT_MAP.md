@@ -66,10 +66,91 @@ distinct queue-group names mean Python and foreign processors form
 separate consumer pools and the router can be informed by deployment
 which kind is available.
 
-## Trace context
+## Reserved middleware lane: underscore-prefixed wire keys
 
-When present, `_trace_context` rides as a top-level key on the JSON
-envelope. SDKs propagate it unchanged — they don't parse or modify it.
+The wire envelope has two addressable surfaces:
+
+1. **Application contract** — the Pydantic models in
+   `heddle.core.messages` and the matching JSON Schemas in
+   `schemas/v1/`. Application code reads and writes these fields.
+   Strictly typed; changes follow the workflows in this document.
+2. **Middleware lane** — top-level keys on the JSON envelope whose
+   names **start with an underscore**. Owned by tagged middleware
+   modules, not application code. **Not declared in the schemas.**
+   Senders MAY include them; receivers MUST tolerate their presence
+   without validation; application code SHOULD NOT read or write them
+   directly.
+
+Modern messaging stacks all separate these lanes (HTTP body vs
+traceparent header; Kafka body vs headers; gRPC message vs metadata;
+CloudEvents typed fields vs extensions map). Heddle's wire envelope
+is a single JSON object, so the underscore-prefix convention is what
+distinguishes the lanes within one object.
+
+### Why this matters
+
+The pattern lets new middleware concerns (tracing, correlation,
+tenant tagging, etc.) ride on the existing envelope without expanding
+the typed contract or breaking forward-compatibility. Application
+schemas stay focused on what application code reads/writes;
+middleware evolves on its own cadence.
+
+### Reserved keys today
+
+| Key | Owner | Spec |
+|---|---|---|
+| `_trace_context` | `heddle.tracing.otel` | W3C Trace Context (`traceparent` / `tracestate` headers, dict-shaped) |
+
+Adding a new reserved key requires:
+
+1. A tagged middleware module that owns the read/write of the key
+   (e.g. `heddle.X.inject_X()` / `heddle.X.extract_X()`).
+2. An update to this table.
+3. An update to the allowlist in
+   `heddle/tools/check_envelope_convention.py` (the mechanical
+   enforcement of the convention).
+4. Mention in `heddle/CHANGELOG.md` under `[Unreleased]` —
+   middleware-lane additions are behavioural changes for downstream
+   consumers.
+
+### Rules
+
+- **Application Pydantic models** (`heddle.core.messages`) MUST NOT
+  declare fields whose names start with `_`. The middleware lane is
+  reserved.
+- **JSON Schemas** in `schemas/v1/` MUST NOT declare properties whose
+  names start with `_`. Middleware-lane fields are intentionally
+  unschema'd to preserve forward compatibility.
+- **Schemas SHOULD NOT set top-level `additionalProperties: false`.**
+  Heddle's Invariant 4 ("Shallow JSON Schema validation") and the
+  middleware lane both depend on receivers tolerating unknown extras.
+  If a future change makes strict validation necessary, the schema
+  MUST also include `patternProperties: { "^_": {} }` to carve the
+  middleware lane back out.
+- **Middleware modules** (those listed in the allowlist above) MUST
+  only read and write `_`-prefixed keys on the wire carrier. Reading
+  or writing a non-`_` key on the carrier is a violation.
+- **SDKs (any language) MUST propagate underscore-prefixed keys
+  unchanged.** They don't parse or modify them. They MAY ignore them
+  entirely. They MUST NOT reject envelopes that include them.
+
+### Enforcement
+
+Convention durability is enforced by three mechanisms, in order of
+strength:
+
+1. **Lint** — `heddle/tools/check_envelope_convention.py` runs in CI
+   and rejects: Pydantic models declaring `_*` fields; middleware
+   modules touching non-`_*` carrier keys; schemas declaring `_*`
+   properties; schemas setting `additionalProperties: false` without
+   the underscore carve-out.
+2. **Tests** — `heddle/tests/test_envelope_convention.py` pins the
+   runtime contract: middleware fields round-trip through Pydantic
+   without rejection or contamination of the typed envelope.
+3. **This document** — the human-readable rule, for new contributors
+   and reviewers.
+
+Drift on any of the three layers is recoverable but visible.
 
 ## When the contract changes
 
