@@ -15,6 +15,21 @@ format model.
 
 ## [Unreleased]
 
+### Removed
+
+- `audits/` directory and its four files (`audit-heddle.md`,
+  `audit-heddle-sdk.md`, `audit-warp-design.md`, `README.md`). These
+  were point-in-time documentation audits from 2026-05-15 — every
+  CRITICAL finding spot-checked has been addressed in the underlying
+  repos (heddle's CLAUDE.md split landed, `pip install heddle-ai`
+  is in README, NATS.md's Swift `package:` snippet uses
+  `swift-nats`, all five warp-design research stubs exist). The
+  files were marketed as "historical snapshots" in their own
+  README, but agents reading them risk acting on stale findings as
+  if still open. Removed to avoid that confusion. The files remain
+  recoverable from git history if anyone needs to reference the
+  audit decisions.
+
 ### Added
 
 - `anchors/CONTRACT_MAP.md` "Control subjects" section — documents
