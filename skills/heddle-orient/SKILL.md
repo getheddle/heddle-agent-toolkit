@@ -13,12 +13,12 @@ anchor.
 ## First: detect workspace vs. single-repo
 
 Apply the detection check from
-`heddle-agent-toolkit/anchors/WORKSPACE.md`:
+`heddle-workspace/anchors/WORKSPACE.md`:
 
 - `.heddle-workspace.yaml` at `cwd` or any ancestor → **workspace mode**;
   that file's directory is the workspace root.
 - Otherwise: `cwd` (or an ancestor) contains both `heddle/` and
-  `heddle-agent-toolkit/` as immediate children → **workspace mode**;
+  `heddle-workspace/` as immediate children → **workspace mode**;
   that directory is the workspace root.
 - Otherwise: **single-repo mode** — you're inside one getheddle/* repo
   cloned alone, or in a non-workspace context.
@@ -41,7 +41,7 @@ warp-design (markdown only)   pre-implementation vision + ADRs
   ▼
 warp (planned, Swift)         macOS cluster agent; not implemented yet
 
-heddle-agent-toolkit          this toolkit: shared agent guidance, skills, subagents
+heddle-workspace          this toolkit: shared agent guidance, skills, subagents
 getheddle.github.io           org-level overview site (planned → getheddle.dev)
 ```
 

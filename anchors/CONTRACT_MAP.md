@@ -236,7 +236,7 @@ or a discussion before implementing.
 1. Decide the name following existing patterns. The convention is
    `heddle.<topic>.<sub>`.
 2. Add it to `heddle/docs/ARCHITECTURE.md` (NATS subjects table) and to
-   `heddle-agent-toolkit/anchors/CONTRACT_MAP.md` (this file).
+   `heddle-workspace/anchors/CONTRACT_MAP.md` (this file).
 3. Add it to each SDK's `Subjects` helper, byte-identical.
 4. If the subject carries a new envelope shape, follow the "adding a new
    field" workflow first to get the envelope into the schemas.

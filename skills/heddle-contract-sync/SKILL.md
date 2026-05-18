@@ -11,7 +11,7 @@ models) in the `heddle` repo. Schemas flow outward via
 
 This skill assumes both `heddle/` and `heddle-sdk/` are checked out as
 siblings — the workspace layout. See
-`heddle-agent-toolkit/anchors/WORKSPACE.md`. Run from the workspace
+`heddle-workspace/anchors/WORKSPACE.md`. Run from the workspace
 root or from inside either sibling; the skill changes directory as
 needed. If `heddle-sdk/` is not checked out, the skill cannot run —
 ask the user to clone it as a sibling.
@@ -81,7 +81,7 @@ they live in code. If your upstream change touched subjects:
 
 - Update `dotnet/src/Heddle.Sdk/Subjects.cs`.
 - Update `swift/Sources/HeddleActor/Subjects.swift`.
-- Update `heddle-agent-toolkit/anchors/CONTRACT_MAP.md` if it's a new
+- Update `heddle-workspace/anchors/CONTRACT_MAP.md` if it's a new
   subject.
 - Update `heddle/docs/ARCHITECTURE.md` NATS-subjects table.
 

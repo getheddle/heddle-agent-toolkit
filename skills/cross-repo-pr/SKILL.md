@@ -11,7 +11,7 @@ The Heddle family has one hard rule about cross-repo changes:
 > copies of schemas, subjects, and wire-protocol facts. Downstream
 > never invents; downstream syncs.**
 
-Anchor: `heddle-agent-toolkit/anchors/CONTRACT_MAP.md`.
+Anchor: `heddle-workspace/anchors/CONTRACT_MAP.md`.
 
 This skill exists because a paired PR has four ceremony steps that are
 easy to forget:
@@ -26,7 +26,7 @@ easy to forget:
 - You are in a workspace (both `heddle/` and `heddle-sdk/` are
   siblings). If you're not, stop and tell the user — this skill
   doesn't operate on a lone repo. (See workspace detection in
-  `heddle-agent-toolkit/anchors/WORKSPACE.md`.)
+  `heddle-workspace/anchors/WORKSPACE.md`.)
 - The change touches at least one of:
   - `heddle/schemas/v1/*.schema.json`
   - `heddle/src/heddle/core/messages.py` (or the subjects helper)
@@ -133,7 +133,7 @@ downstream that references an upstream that no longer exists.
 
 ## See also
 
-- `heddle-agent-toolkit/anchors/CONTRACT_MAP.md` — wire-protocol facts
+- `heddle-workspace/anchors/CONTRACT_MAP.md` — wire-protocol facts
   and sync direction.
 - `/heddle-contract-sync` — the drift-check skill this one wraps.
 - `/heddle-preflight` — per-repo verification you run on each side

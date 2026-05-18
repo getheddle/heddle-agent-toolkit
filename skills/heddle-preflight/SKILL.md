@@ -12,7 +12,7 @@ single pass/fail at the end with per-step results.
 ## Detection
 
 First, apply the workspace check from
-`heddle-agent-toolkit/anchors/WORKSPACE.md`. Then:
+`heddle-workspace/anchors/WORKSPACE.md`. Then:
 
 - **Workspace mode** (`cwd` is the workspace root): preflight runs
   per-sibling. By default, only run preflight in repos whose
@@ -113,7 +113,7 @@ swift test
 ## CHANGELOG check
 
 For repos that maintain a `CHANGELOG.md` (heddle, heddle-sdk,
-heddle-agent-toolkit), verify the `[Unreleased]` section has at least
+heddle-workspace), verify the `[Unreleased]` section has at least
 one categorized entry when the staged diff touches behaviour-bearing
 paths. Behaviour-bearing means:
 
