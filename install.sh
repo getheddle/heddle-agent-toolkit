@@ -23,19 +23,27 @@
 # see hooks/README.md for the manual merge steps. Can be combined with
 # --workspace.
 #
+# MCP (--mcp): copies mcp/.mcp.template.json to <target>/.mcp.json ONLY
+# if no .mcp.json exists. See mcp/README.md for the manual merge steps
+# when a file already exists, and for prerequisites (npx, gh CLI).
+# Typically combined with --workspace since .mcp.json is most useful
+# at the workspace root.
+#
 # Idempotent: re-running replaces existing toolkit-owned symlinks but
 # does not touch entries that are not toolkit symlinks. Workspace
-# extras (AGENTS.md, .code-workspace, settings.json) are only created
-# when absent; an existing file is never overwritten.
+# extras (AGENTS.md, .code-workspace, settings.json, .mcp.json) are
+# only created when absent; an existing file is never overwritten.
 
 set -euo pipefail
 
 mode="repo"
 install_hooks=0
+install_mcp=0
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --workspace) mode="workspace"; shift ;;
         --hooks)     install_hooks=1;   shift ;;
+        --mcp)       install_mcp=1;     shift ;;
         --)          shift; break ;;
         -*)
             echo "error: unknown flag '$1'" >&2
@@ -49,6 +57,7 @@ if [[ $# -ne 1 ]]; then
     echo "  $0 <target-repo-path>            # single-repo install" >&2
     echo "  $0 --workspace <workspace-path>  # workspace install" >&2
     echo "  $0 --hooks <target>              # also drop hooks template" >&2
+    echo "  $0 --mcp <target>                # also drop .mcp.json template" >&2
     exit 2
 fi
 
@@ -197,14 +206,23 @@ to implement specific recommendations.
 
 Two MCP servers materially improve Heddle-family work:
 
-| Server | Why | Install |
-|---|---|---|
-| \`github\` | Cross-repo PR/issue/CI access for \`getheddle/*\` repos; pairs well with \`/cross-repo-pr\`. | \`claude mcp add github\` |
-| \`context7\` | Live docs for Pydantic, nats-py, structlog, DuckDB, LanceDB, etc. — avoids stale-recall errors. | \`claude mcp add context7\` |
+| Server | Why |
+|---|---|
+| \`context7\` | Live docs for Pydantic, nats-py, structlog, DuckDB, LanceDB, etc. — avoids stale-recall errors. No auth. |
+| \`github\` | Cross-repo PR/issue/CI access for \`getheddle/*\` repos; pairs well with \`/cross-repo-pr\`. Reads token from \`gh auth token\` at MCP startup. |
 
-MCP config is per-user; you only do this once. See
-\`hooks/README.md\` in the toolkit for the hooks template that
-complements these.
+The toolkit ships a project-scoped \`.mcp.json\` template with both
+servers pre-configured. Drop it in at the workspace root with:
+
+\`\`\`
+./heddle-agent-toolkit/install.sh --workspace --mcp .
+\`\`\`
+
+(Or run \`--mcp\` alone if the workspace is already installed.) See
+\`heddle-agent-toolkit/mcp/README.md\` for prerequisites (\`npx\`,
+authenticated \`gh\`) and manual-merge guidance when a \`.mcp.json\`
+already exists. See \`hooks/README.md\` for the hooks template that
+complements the MCP servers.
 EOF
         echo "wrote:   AGENTS.md"
     else
@@ -260,6 +278,19 @@ if [[ "$install_hooks" == "1" ]]; then
     else
         cp "$template" "$settings"
         echo "wrote:   .claude/settings.json (from hooks template)"
+    fi
+fi
+
+if [[ "$install_mcp" == "1" ]]; then
+    mcp_dst="$target_abs/.mcp.json"
+    mcp_template="$toolkit_root/mcp/.mcp.template.json"
+    if [[ ! -e "$mcp_template" ]]; then
+        echo "skip:    mcp (template not found at $mcp_template)"
+    elif [[ -e "$mcp_dst" ]]; then
+        echo "skip:    .mcp.json (exists — see mcp/README.md to merge by hand)"
+    else
+        cp "$mcp_template" "$mcp_dst"
+        echo "wrote:   .mcp.json (from mcp template)"
     fi
 fi
 

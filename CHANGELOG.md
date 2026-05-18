@@ -17,6 +17,17 @@ format model.
 
 ### Added
 
+- `mcp/` — project-scoped `.mcp.json` template for Heddle-family
+  workspaces, pre-configured with `context7` (live docs lookup, no
+  auth) and `github` (cross-repo PR/issue/CI access; token resolved
+  from `gh auth token` at MCP startup, so nothing sensitive is
+  checked in). Mirrors the `hooks/` pattern: opt-in template, not
+  auto-installed. `install.sh --mcp <target>` drops the template
+  into `<target>/.mcp.json` when absent; see `mcp/README.md` for
+  manual merge steps and prerequisites (`npx`, authenticated `gh`).
+  Replaces the by-hand `claude mcp add github` / `claude mcp add
+  context7` recommendation previously embedded in `install.sh`'s
+  workspace `AGENTS.md` template.
 - `agents/pyproject-deps-reviewer.md` — read-only reviewer for Python
   dependency changes (extras coverage, version drift, MPL-2.0 license
   compatibility, orphan deps, uv.lock hygiene). Spawn when a diff

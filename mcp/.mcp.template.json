@@ -1,0 +1,23 @@
+{
+  "//": "Heddle-family MCP template. Project-scoped .mcp.json — drop in at a workspace root (next to heddle/, heddle-sdk/, ...) to make these servers available to any Claude Code session opened in the workspace. install.sh --mcp copies this file only when no .mcp.json exists. See mcp/README.md.",
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "env": {}
+    },
+    "github": {
+      "type": "stdio",
+      "command": "sh",
+      "args": [
+        "-c",
+        "GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token) exec npx -y @modelcontextprotocol/server-github"
+      ],
+      "env": {}
+    }
+  }
+}
