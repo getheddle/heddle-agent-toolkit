@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from heddle_workspace import git, manifest
+from heddle_workspace import git, manifest, overlay
 from heddle_workspace.manifest import LOCAL_ONLY_DIR
 
 
@@ -55,5 +55,24 @@ def run(args: argparse.Namespace) -> int:
             orphans_found = True
     if not orphans_found:
         print("  (none)")
+
+    # Overlay candidates: untracked files inside child repos that could be
+    # promoted into the umbrella overlay tree.
+    candidates = overlay.list_candidates(
+        root, [r.path for r in m.repos]
+    )
+    if candidates:
+        print()
+        print("overlay candidates (untracked in child, not yet shared):")
+        by_repo: dict[str, list[str]] = {}
+        for c in candidates:
+            by_repo.setdefault(c.repo, []).append(c.path)
+        for repo, paths in by_repo.items():
+            print(f"  {repo}: {len(paths)} untracked file(s)")
+            for p in paths[:5]:
+                print(f"    {p}")
+            if len(paths) > 5:
+                print(f"    … and {len(paths) - 5} more")
+        print("  Run `workspace overlay add <repo>/<path>` to share.")
 
     return 0

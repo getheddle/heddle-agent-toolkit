@@ -6,7 +6,7 @@ import argparse
 import shutil
 from pathlib import Path
 
-from heddle_workspace import git, manifest, wizard
+from heddle_workspace import git, manifest, overlay, wizard
 from heddle_workspace.manifest import LOCAL_ONLY_DIR, Manifest, RepoEntry
 
 
@@ -78,6 +78,7 @@ def run(args: argparse.Namespace) -> int:
     print(f"wrote {gitignore.relative_to(root)}")
 
     _ensure_local_only(root)
+    overlay.ensure_overlays_dir(root)
 
     if args.no_commit:
         print("--no-commit: skipped staging and committing.")
@@ -104,6 +105,8 @@ def _stage_and_commit(root: Path, m: Manifest) -> None:
     # Stage only the files we wrote, plus any loose root files the user wants
     # to capture. The umbrella's own commit message references the manifest.
     git.run("add", ".gitignore", manifest.MANIFEST_FILENAME, cwd=root)
+    if (root / overlay.OVERLAYS_DIRNAME / ".gitkeep").exists():
+        git.run("add", f"{overlay.OVERLAYS_DIRNAME}/.gitkeep", cwd=root)
     # If the user already had loose files (README, AGENTS.md, audit reports),
     # stage them too — they belong in the umbrella history.
     for fname in (

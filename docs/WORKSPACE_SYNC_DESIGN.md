@@ -172,6 +172,98 @@ A small CLI. Commands:
 | `workspace add <path>` | Detect remote from existing `.git/config`, append manifest entry, stage `.heddle-workspace.yaml`. Refuses if `path` is under `(local-only)/` or has no remote. |
 | `workspace rm <path>` | Remove manifest entry. Does not delete the working tree (operator does that explicitly). |
 | `workspace doctor` | Verify each manifest remote is reachable and the umbrella's `.gitignore` covers every manifest path. |
+| `workspace overlay add <repo>/<path>` | Promote an untracked file (or directory) inside a child repo into the umbrella's overlay tree. Moves the file to `overlays/<repo>/<path>`, replaces the original with a symlink, and adds `/path` to the child's `.git/info/exclude` so its own `git status` stays clean. |
+| `workspace overlay rm <repo>/<path>` | Reverse: move the overlay back to a real (untracked) file in the child repo. |
+
+## The overlay mechanism
+
+There is a third class of file that the umbrella + manifest model doesn't
+cover on its own: files that conceptually belong inside a child repo but
+that the child repo *doesn't* want to track — work-in-progress notes,
+session-starter queues, drafts of architecture docs. Without help, these
+fall through the cracks: the umbrella's `.gitignore` excludes the child
+repo dir (so the umbrella can't see them), and the child repo's own
+`.gitignore` ignores them (so they aren't in its history). They end up
+machine-local.
+
+The **overlay store** closes that gap. The umbrella reserves a top-level
+`overlays/` directory that mirrors the child-repo layout:
+
+```text
+<workspace>/
+├── overlays/
+│   └── heddle/
+│       ├── session-starters/                    ← whole directory
+│       │   └── A-design-chat.md
+│       └── notes-architecture.md
+└── heddle/                                       ← gitignored from umbrella
+    ├── session-starters → ../overlays/heddle/session-starters/   (symlink)
+    └── notes-architecture.md → ../overlays/heddle/notes-architecture.md
+```
+
+The overlay file is the source of truth; the child repo's working tree
+gets a symlink pointing back into the overlay. Editing the file via the
+child path transparently modifies the umbrella's tracked file. The child
+repo's `.git/info/exclude` (local-only ignore, not committed) hides the
+symlink from its own `git status` so the child's diff stays clean.
+
+### Promotion is always explicit
+
+`workspace sync` recreates symlinks for entries already in the overlay
+tree, but it **never** auto-promotes untracked files. Promotion is a
+deliberate operator decision, never a sweep. `workspace status` surfaces
+candidates (per child repo, untracked files that aren't already overlay
+symlinks) so you can see what's promotable without searching:
+
+```text
+overlay candidates (untracked in child, not yet shared):
+  heddle: 2 untracked file(s)
+    notes-architecture.md
+    session-starters/A-foo.md
+  Run `workspace overlay add <repo>/<path>` to share.
+```
+
+When you decide a file is worth sharing, `workspace overlay add
+heddle/notes-architecture.md` moves it into `overlays/heddle/`, creates
+the symlink, updates the child's `.git/info/exclude`, and prints the
+`git add` command to commit the overlay file in the umbrella. The
+roundtrip on a second machine is `git pull` (in the umbrella) → `workspace
+sync` (recreates the symlink from the now-present overlay file).
+
+### No manifest enumeration
+
+The rule is "anything under `overlays/<repo>/...` overlays onto
+`<repo>/...`." The manifest doesn't list overlay paths; the overlay
+tree is self-describing. `workspace sync` walks `overlays/` and ensures
+every entry has a corresponding symlink in the matching child repo.
+
+### Symlinks vs copies
+
+Symlinks are the recommended mode and the only one implemented today:
+one source of truth, edits flow transparently. Tradeoffs to know about:
+
+- **Windows.** Native symlink support exists but requires Developer
+  Mode or admin elevation on creation. The CLI currently assumes a
+  POSIX-friendly host. If Windows support is needed, a `--copy` mode
+  would store overlays as copies and add an explicit `workspace overlay
+  stage` to push edits back into the umbrella tree.
+- **Tools that resolve symlinks.** Most don't care; some
+  vendored-dependency tools do. If a tool refuses to walk into a
+  symlinked directory, demote that overlay back with `workspace overlay
+  rm` and find a different sharing mechanism (e.g., commit it
+  upstream).
+
+### Edge cases the implementation handles
+
+- Overlay file exists but the child repo isn't cloned yet → warning,
+  not error. Run `workspace sync` first.
+- Real file exists in the child at the overlay's target path →
+  warning, no overwrite. The operator decides whether to move/remove
+  the file before re-running `sync`.
+- Stale symlink in the child pointing at a now-deleted overlay →
+  replaced with the current overlay target on the next `sync`.
+- Pre-existing line in `.git/info/exclude` matching the path → not
+  duplicated.
 
 Design notes:
 
