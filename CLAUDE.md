@@ -1,4 +1,4 @@
-# CLAUDE.md — heddle-agent-toolkit
+# CLAUDE.md — heddle-workspace
 
 Claude-specific notes. The canonical agent instructions live in
 [`AGENTS.md`](AGENTS.md) — read that first.

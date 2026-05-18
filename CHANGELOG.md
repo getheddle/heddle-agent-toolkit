@@ -15,8 +15,30 @@ format model.
 
 ## [Unreleased]
 
+### Changed
+
+- **Repository renamed: `heddle-agent-toolkit` → `heddle-workspace`.**
+  GitHub auto-redirects the old clone URLs. The rename reflects the
+  repo's widened mission: in addition to the agent-tooling pillar
+  (anchors, skills, subagents), it now also owns the workspace
+  lifecycle pillar (umbrella-repo design, `.heddle-workspace.yaml`
+  manifest, `bin/workspace` CLI). README, `AGENTS.md`, and
+  `anchors/WORKSPACE.md` updated; historical CHANGELOG entries left
+  verbatim. Consumer repos (`heddle/`, `heddle-sdk/`, `warp-design/`,
+  `getheddle-dotgithub/`) updated separately so each repo's diff
+  stays focused.
+
 ### Added
 
+- `docs/WORKSPACE_SYNC_DESIGN.md` — full design rationale for the
+  workspace-sync facility: the umbrella git repo on the project's own
+  org, the `.heddle-workspace.yaml` manifest format with remote URLs,
+  the `(local-only)/` carve-out, the `bin/workspace init / link /
+  sync / status / add / rm / doctor` CLI, the bootstrap flow for two
+  already-divergent workspaces, and explicit non-goals (no
+  submodules, no SHA-pinning by default, no subtree embedding).
+  Supersedes the unimplemented manifest sketch previously in
+  `anchors/WORKSPACE.md`.
 - `mcp/` — project-scoped `.mcp.json` template for Heddle-family
   workspaces, pre-configured with `context7` (live docs lookup, no
   auth) and `github` (cross-repo PR/issue/CI access; token resolved
@@ -257,5 +279,5 @@ Initial release.
 - **`audits/`** — historical fresh-eyes documentation audits captured
   during the initial buildout (heddle, heddle-sdk, warp-design).
 
-[Unreleased]: https://github.com/getheddle/heddle-agent-toolkit/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/getheddle/heddle-agent-toolkit/releases/tag/v0.1.0
+[Unreleased]: https://github.com/getheddle/heddle-workspace/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/getheddle/heddle-workspace/releases/tag/v0.1.0

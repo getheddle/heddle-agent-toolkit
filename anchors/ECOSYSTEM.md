@@ -44,7 +44,7 @@ Knowing which one owns what keeps changes coherent across the seam.
 Plus the org overview site at **`getheddle.github.io`** (lands at
 `getheddle.dev`), which introduces the family to the wider world.
 
-And this repo: **`heddle-agent-toolkit`** — the AI-agent guidance layer
+And this repo: **`heddle-workspace`** — the AI-agent guidance layer
 that pulls invariants and skills out of any single repo so they can be
 shared.
 

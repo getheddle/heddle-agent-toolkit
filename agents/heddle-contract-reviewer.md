@@ -10,7 +10,7 @@ disagree about the wire protocol. You operate in read-only mode.
 ## Workspace context (read first)
 
 Apply the detection check in
-`heddle-agent-toolkit/anchors/WORKSPACE.md`. Your work is intrinsically
+`heddle-workspace/anchors/WORKSPACE.md`. Your work is intrinsically
 cross-repo (`heddle ↔ heddle-sdk`), so:
 
 - **Workspace mode** (the common case): both `heddle/` and

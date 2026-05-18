@@ -142,7 +142,7 @@ and one or more consuming applications as flat siblings.
 
 Cross-repo invariants, philosophy, schema source-of-truth direction,
 and reusable skills/subagents live in
-[\`heddle-agent-toolkit/\`](heddle-agent-toolkit/). The toolkit's
+[\`heddle-workspace/\`](heddle-workspace/). The toolkit's
 skills and subagents are symlinked into this workspace's \`.claude/\`,
 so any Claude Code session started at the workspace root has access
 to them.
@@ -168,7 +168,7 @@ siblings.
 
 ## Convention reference
 
-\`heddle-agent-toolkit/anchors/WORKSPACE.md\` — the technical
+\`heddle-workspace/anchors/WORKSPACE.md\` — the technical
 reference for workspace detection, cross-repo git conventions, and
 path conventions.
 
@@ -215,11 +215,11 @@ The toolkit ships a project-scoped \`.mcp.json\` template with both
 servers pre-configured. Drop it in at the workspace root with:
 
 \`\`\`
-./heddle-agent-toolkit/install.sh --workspace --mcp .
+./heddle-workspace/install.sh --workspace --mcp .
 \`\`\`
 
 (Or run \`--mcp\` alone if the workspace is already installed.) See
-\`heddle-agent-toolkit/mcp/README.md\` for prerequisites (\`npx\`,
+\`heddle-workspace/mcp/README.md\` for prerequisites (\`npx\`,
 authenticated \`gh\`) and manual-merge guidance when a \`.mcp.json\`
 already exists. See \`hooks/README.md\` for the hooks template that
 complements the MCP servers.
@@ -257,7 +257,7 @@ EOF
     fi
 }
 
-echo "Installing heddle-agent-toolkit into $target_abs ($mode mode)"
+echo "Installing heddle-workspace into $target_abs ($mode mode)"
 echo "  toolkit root: $toolkit_root"
 echo
 

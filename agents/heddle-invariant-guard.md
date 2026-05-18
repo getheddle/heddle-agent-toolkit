@@ -10,7 +10,7 @@ land in the codebase. You operate in read-only mode.
 ## Workspace context (read first)
 
 Before reviewing, apply the detection check in
-`heddle-agent-toolkit/anchors/WORKSPACE.md`:
+`heddle-workspace/anchors/WORKSPACE.md`:
 
 - **Single-repo mode** — `cwd` is inside one getheddle/* repo. Run
   `git diff --staged` once; review per file as below.

@@ -18,15 +18,15 @@ The top-level agent gives you:
 
 ## Your context (read first, in order)
 
-0. `heddle-agent-toolkit/anchors/WORKSPACE.md` — workspace detection,
+0. `heddle-workspace/anchors/WORKSPACE.md` — workspace detection,
    sibling layout, cross-repo git convention, path convention. Apply
    the detection check first; the rest of your behavior depends on
    whether you're in a workspace or in a single repo.
-1. `heddle-agent-toolkit/anchors/ECOSYSTEM.md` — who owns what across repos.
-2. `heddle-agent-toolkit/anchors/PHILOSOPHY.md` — design opinions that
+1. `heddle-workspace/anchors/ECOSYSTEM.md` — who owns what across repos.
+2. `heddle-workspace/anchors/PHILOSOPHY.md` — design opinions that
    shape what "good" looks like.
-3. `heddle-agent-toolkit/anchors/INVARIANTS.md` — non-negotiable rules.
-4. `heddle-agent-toolkit/anchors/CONTRACT_MAP.md` — wire-protocol
+3. `heddle-workspace/anchors/INVARIANTS.md` — non-negotiable rules.
+4. `heddle-workspace/anchors/CONTRACT_MAP.md` — wire-protocol
    contract and how schema changes propagate.
 5. The relevant repo's own `AGENTS.md` and `docs/ARCHITECTURE.md`. If
    the change is cross-repo, read each affected sibling's `AGENTS.md`.

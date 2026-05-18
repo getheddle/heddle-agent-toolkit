@@ -146,7 +146,7 @@ the change isn't ready.
 
 **Behaviour changes also require a `CHANGELOG.md` entry.** Each
 released-artifact-producing repo in the family (`heddle`,
-`heddle-sdk`, `heddle-agent-toolkit`) maintains a
+`heddle-sdk`, `heddle-workspace`) maintains a
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) at its root.
 Adding, changing, deprecating, removing, or fixing user-facing
 behaviour requires an entry under `[Unreleased]` in the relevant

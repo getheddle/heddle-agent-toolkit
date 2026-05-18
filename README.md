@@ -1,13 +1,17 @@
-# heddle-agent-toolkit
+# heddle-workspace
 
-Shared AI-agent guidance, skills, and subagents for the `getheddle`
-repository family ([heddle](https://github.com/getheddle/heddle),
+Everything you need to assemble, run, and sync a Heddle-based project
+workspace — agent tooling and workspace lifecycle in one place. The
+sibling repos are [heddle](https://github.com/getheddle/heddle),
 [heddle-sdk](https://github.com/getheddle/heddle-sdk),
-[warp-design](https://github.com/getheddle/warp-design), and the planned
-`warp`).
+[warp-design](https://github.com/getheddle/warp-design), and the
+planned `warp`.
 
-This repository exists so that AI coding assistants working in any
-`getheddle/*` repo:
+Two pillars:
+
+### 1. Agent tooling
+
+So that AI coding assistants working in any `getheddle/*` repo:
 
 1. **Orient fast.** One canonical set of cross-repo anchors instead of
    re-reading each project's docs from scratch.
@@ -15,6 +19,26 @@ This repository exists so that AI coding assistants working in any
    philosophy live in one place; sibling repos point here.
 3. **Stay coherent across the seam.** Schema source-of-truth direction,
    subject conventions, and wire-protocol rules are documented once.
+
+### 2. Workspace lifecycle
+
+So that a Heddle-based project can be assembled, moved between
+machines, and kept in sync across team members:
+
+1. **Manifest-driven layout.** `workspace.yaml` declares which repos
+   belong in the workspace and where their remotes live. The umbrella
+   git repo (private, on the project's own org) tracks loose files,
+   audit reports, agent config, and the manifest — never the contents
+   of the child repos.
+2. **Interactive bootstrap.** `bin/workspace init` walks you through
+   creating a new workspace; `bin/workspace link` pulls an existing
+   one into a fresh machine; `bin/workspace sync` reconciles missing
+   children. An explicit `(local-only)/` carve-out keeps
+   machine-specific content off the wire.
+3. **Mergeable across machines.** Because the umbrella is a normal
+   git repo, two divergent workspaces (work / home) reconcile through
+   ordinary `git merge`. See `docs/WORKSPACE_SYNC_DESIGN.md` for the
+   full spec.
 
 ## What's here
 
@@ -50,8 +74,8 @@ Three paths cover the common cases:
 ```bash
 mkdir my-project && cd my-project
 git clone https://github.com/getheddle/heddle
-git clone https://github.com/getheddle/heddle-agent-toolkit
-./heddle-agent-toolkit/install.sh --workspace .
+git clone https://github.com/getheddle/heddle-workspace
+./heddle-workspace/install.sh --workspace .
 ```
 
 That's it. You now have:
@@ -63,7 +87,7 @@ That's it. You now have:
 Open VSCode with `code my-project.code-workspace`; create your app dir
 as another sibling (`mkdir my-app && cd my-app && uv init`) and add it
 to the `.code-workspace` `folders` list. Re-run
-`./heddle-agent-toolkit/install.sh --workspace .` whenever you add
+`./heddle-workspace/install.sh --workspace .` whenever you add
 siblings — it's idempotent and updates the existing files only if you
 delete them first.
 
@@ -74,8 +98,8 @@ Run from one level **above** your existing app directory:
 ```bash
 cd /path/to/parent-of-my-app
 git clone https://github.com/getheddle/heddle
-git clone https://github.com/getheddle/heddle-agent-toolkit
-./heddle-agent-toolkit/install.sh --workspace .
+git clone https://github.com/getheddle/heddle-workspace
+./heddle-workspace/install.sh --workspace .
 ```
 
 Same three commands. The existing app becomes one of the workspace's
@@ -91,15 +115,20 @@ Then `uv sync` from the app dir.
 
 ### Path C — Join an existing Heddle workspace
 
-If a collaborator's workspace declares its repos in a
-`.heddle-workspace.yaml` manifest, you can mirror their setup by
-cloning each sibling listed there. (A `heddle workspace clone`
-subcommand to automate this is on the roadmap; until then it's
-manual.) After cloning the siblings, run the same install:
+If the workspace is published as an umbrella git repo on your project's
+GitHub org, joining it is one clone plus one sync:
 
 ```bash
-./heddle-agent-toolkit/install.sh --workspace .
+git clone https://github.com/<your-org>/<workspace-name>
+cd <workspace-name>
+./bin/workspace sync          # clones every sibling listed in .heddle-workspace.yaml
 ```
+
+See `docs/WORKSPACE_SYNC_DESIGN.md` for the umbrella-repo design and
+the `bin/workspace` CLI reference. The same flow handles "I want to
+work on this workspace from another machine" and "I'm joining a
+team-mate's workspace" — the umbrella is just a git repo, so cloning
+it on a second machine works the same way.
 
 ### Optional: enable hooks
 
@@ -113,7 +142,7 @@ that adds two Claude Code hooks tuned to a Heddle workspace:
 Enable when running the installer:
 
 ```bash
-./heddle-agent-toolkit/install.sh --workspace --hooks .
+./heddle-workspace/install.sh --workspace --hooks .
 ```
 
 The flag copies the template only if no `.claude/settings.json` exists
@@ -187,18 +216,18 @@ detects workspace mode automatically.
 
 ## Status
 
-Pre-release. Tracked alongside the get-heddle org repos but not yet
-published. Once stable, this lives at `github.com/getheddle/heddle-agent-toolkit`.
+Pre-release. Lives at `github.com/getheddle/heddle-workspace` (renamed
+from `heddle-agent-toolkit` in May 2026 when workspace-lifecycle
+tooling landed alongside the agent-tooling pillar).
 
-The workspace convention is the **recommended pattern** for Heddle-
-based projects. Agents and skills in this toolkit detect and operate
-in workspace mode; the bootstrap experience above is intentionally
-three plain `git clone` + one `install.sh` commands rather than a
-single `bootstrap.sh` wrapper — fewer abstractions to learn and to
-trust. A `heddle workspace` CLI, the `.heddle-workspace.yaml`
-manifest schema, and a `HEDDLE_WORKSPACE` env-var convention are
-designed in `anchors/WORKSPACE.md` but not yet implemented; they will
-land as the convention matures.
+The workspace convention is the **recommended pattern** for
+Heddle-based projects. Agents and skills detect and operate in
+workspace mode; the bootstrap experience is intentionally a small
+number of plain commands rather than a single magic wrapper — fewer
+abstractions to learn and to trust. The `bin/workspace` CLI, the
+`.heddle-workspace.yaml` manifest schema, and the umbrella-repo
+contract are documented in `anchors/WORKSPACE.md` and
+`docs/WORKSPACE_SYNC_DESIGN.md`.
 
 ## License
 

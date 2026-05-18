@@ -1,4 +1,4 @@
-# AGENTS.md — heddle-agent-toolkit
+# AGENTS.md — heddle-workspace
 
 ## Purpose
 
@@ -114,7 +114,7 @@ Each `getheddle/*` repo that produces released artifacts maintains a
 |---|---|---|
 | `heddle` | yes — root `CHANGELOG.md` | Backfilled from v0.9.2 release notes. |
 | `heddle-sdk` | yes — root `CHANGELOG.md` | `[Unreleased]` only until first tag. |
-| `heddle-agent-toolkit` | yes — root `CHANGELOG.md` | Skill/anchor changes are behaviour for agent consumers. |
+| `heddle-workspace` | yes — root `CHANGELOG.md` | Skill/anchor changes are behaviour for agent consumers. |
 | `warp-design` | **no** — uses `EVOLUTION_LOG.md` instead | Design-only repo; no behaviour to changelog. ADRs serve as the durable decision log. |
 | `getheddle.github.io` | no | Single-page landing site. |
 
