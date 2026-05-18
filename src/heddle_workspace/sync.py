@@ -1,11 +1,18 @@
-"""`workspace sync` — clone missing manifest entries; fetch the rest."""
+"""`workspace sync` — clone missing manifest entries; fetch the rest.
+
+After cloning/fetching, the umbrella's `overlays/` tree is reapplied:
+any file under `overlays/<repo>/<path>` is symlinked into the
+corresponding child repo's working tree (creating directories and
+.git/info/exclude entries as needed). The symlink-recreation step is
+idempotent — never auto-promotes new untracked files.
+"""
 
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
-from heddle_workspace import git, manifest
+from heddle_workspace import git, manifest, overlay
 
 
 def run(args: argparse.Namespace) -> int:
@@ -41,6 +48,13 @@ def run(args: argparse.Namespace) -> int:
             fetched += 1
         else:
             skipped += 1
+
+    applied, warnings = overlay.apply_all(root)
+    if applied or warnings:
+        print()
+        print(f"overlays: {applied} symlink(s) applied/refreshed")
+        for w in warnings:
+            print(f"  warning: {w}")
 
     print()
     print(f"sync complete: {cloned} cloned, {fetched} fetched, {skipped} skipped")

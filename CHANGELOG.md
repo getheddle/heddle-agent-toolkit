@@ -15,6 +15,36 @@ format model.
 
 ## [Unreleased]
 
+### Added
+
+- **Overlay mechanism** — share files that conceptually belong inside a
+  child repo but that the child repo doesn't want to track (work-in-
+  progress notes, session-starter queues, draft architecture docs).
+  Each overlay lives at `overlays/<repo>/<path>` in the umbrella; the
+  child repo's working tree gets a symlink pointing back into the
+  overlay, and the child's `.git/info/exclude` keeps the symlink
+  invisible to its own `git status`.
+  - `workspace overlay add <repo>/<path>` — promote an untracked file
+    or directory into the overlay; replaces the original with a
+    symlink; updates `.git/info/exclude`.
+  - `workspace overlay rm <repo>/<path>` — demote: move the overlay
+    back to a normal (untracked) file in the child repo.
+  - `workspace sync` now walks `overlays/` after cloning/fetching and
+    recreates symlinks idempotently. **Never** auto-promotes new
+    untracked files — promotion is always explicit.
+  - `workspace status` surfaces overlay candidates: per child repo,
+    untracked files that aren't already overlay symlinks. Lists up to
+    five per repo with a "Run `workspace overlay add` to share" hint.
+  - `workspace init` creates `overlays/` with a `.gitkeep` so the
+    tree is present from the first commit.
+  - Full design rationale (the gap it closes, why symlinks vs copies,
+    why no manifest enumeration) added to
+    `docs/WORKSPACE_SYNC_DESIGN.md` "The overlay mechanism".
+  - Round-trip and edge-case tests in `tests/test_overlay.py`
+    (promote/demote symmetry, idempotent sync, real-file collision
+    warning, stale-symlink replacement, candidate exclusion of
+    already-promoted paths).
+
 ### Changed
 
 - **Repository renamed: `heddle-agent-toolkit` → `heddle-workspace`.**

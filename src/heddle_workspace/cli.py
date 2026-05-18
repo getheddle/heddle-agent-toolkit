@@ -27,6 +27,9 @@ from heddle_workspace import (
 from heddle_workspace import (
     sync as cmd_sync,
 )
+from heddle_workspace import (
+    overlay_cmd as cmd_overlay,
+)
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -99,6 +102,32 @@ def _build_parser() -> argparse.ArgumentParser:
         "doctor", help="verify manifest remotes are reachable and .gitignore is in sync"
     )
     s.set_defaults(func=cmd_doctor.run)
+
+    s = sub.add_parser(
+        "overlay",
+        help="share an untracked file inside a child repo across machines",
+    )
+    osub = s.add_subparsers(dest="overlay_command", required=True)
+
+    sa = osub.add_parser(
+        "add",
+        help="promote an untracked file into the umbrella's overlays/ tree",
+    )
+    sa.add_argument(
+        "target",
+        help="<repo>/<path>, e.g. heddle/notes-architecture.md",
+    )
+    sa.set_defaults(func=cmd_overlay.run)
+
+    sr = osub.add_parser(
+        "rm",
+        help="demote an overlay back to a normal (untracked) file in the child repo",
+    )
+    sr.add_argument(
+        "target",
+        help="<repo>/<path>, e.g. heddle/notes-architecture.md",
+    )
+    sr.set_defaults(func=cmd_overlay.run)
 
     return p
 
