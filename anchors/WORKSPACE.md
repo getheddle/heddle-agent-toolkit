@@ -173,6 +173,19 @@ Workspace-level contents (tracked by the umbrella, not by any child):
   workspace-wide reviews. See the `/audit-followup` skill.
 - `bin/workspace` — the sync CLI (symlinked from
   `heddle-workspace/bin/workspace`).
+- `roadmap/` — persistent home for **feature thinking** across the
+  workspace; one file per track. Scaffolded by `workspace init` with a
+  `README.md` describing the track lifecycle.
+- `session-starters/` — disposable bridge prompts plus
+  **maintenance-cycle** subfolders (review-driven hardening, dep
+  audits, security passes). Scaffolded by `workspace init` with a
+  `README.md` describing the cycle pattern.
+
+The `roadmap/` + `session-starters/` split is the formal expression of
+the "feature work vs. maintenance work" distinction; the templates
+shipped with `workspace init` define the discipline for each. Existing
+files are never overwritten, so running init against an established
+workspace is safe.
 
 Each repo keeps its own `.claude/`, `AGENTS.md`, `docs/`, and
 `CHANGELOG.md`. Workspace-level contents do not replace repo-level

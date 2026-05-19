@@ -80,6 +80,7 @@ def run(args: argparse.Namespace) -> int:
 
     _ensure_local_only(root)
     overlay.ensure_overlays_dir(root)
+    _scaffold_workflow_conventions(root, name)
 
     if args.no_commit:
         print("--no-commit: skipped staging and committing.")
@@ -154,6 +155,32 @@ def _ensure_local_only(root: Path) -> None:
     # Even though the dir is gitignored, we want it present so users see it.
 
 
+_SCAFFOLD_FILES = {
+    "AGENTS.md": "AGENTS.md",
+    "roadmap/README.md": "roadmap-README.md",
+    "session-starters/README.md": "session-starters-README.md",
+}
+
+
+def _templates_dir() -> Path:
+    return Path(__file__).resolve().parents[2] / "templates" / "workspace-init"
+
+
+def _scaffold_workflow_conventions(root: Path, name: str) -> None:
+    """Create roadmap/ and session-starters/ with the standard READMEs, plus
+    AGENTS.md, if missing. Existing files are left untouched so re-running
+    init on an established workspace is safe."""
+    tdir = _templates_dir()
+    for rel, template_name in _SCAFFOLD_FILES.items():
+        dest = root / rel
+        if dest.exists():
+            continue
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        rendered = (tdir / template_name).read_text().replace("{{name}}", name)
+        dest.write_text(rendered)
+        print(f"wrote {rel}")
+
+
 def _stage_and_commit(root: Path, m: Manifest) -> None:
     # Stage only the files we wrote, plus any loose root files the user wants
     # to capture. The umbrella's own commit message references the manifest.
@@ -166,6 +193,8 @@ def _stage_and_commit(root: Path, m: Manifest) -> None:
         "README.md",
         "AGENTS.md",
         "CLAUDE.md",
+        "roadmap/README.md",
+        "session-starters/README.md",
     ):
         p = root / fname
         if p.exists():
