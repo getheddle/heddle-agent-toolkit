@@ -68,6 +68,22 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="write manifest and .gitignore but don't `git add` / `git commit`",
     )
+    s.add_argument(
+        "--create-remote",
+        action="store_true",
+        help=(
+            "after committing, run `gh repo create` for the umbrella. "
+            "Default visibility is PRIVATE; pass --public to override."
+        ),
+    )
+    s.add_argument(
+        "--public",
+        action="store_true",
+        help=(
+            "with --create-remote, create the umbrella as a PUBLIC repo. "
+            "Must be requested explicitly; private is the default."
+        ),
+    )
     s.set_defaults(func=cmd_init.run)
 
     s = sub.add_parser(

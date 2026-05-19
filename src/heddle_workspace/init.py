@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import subprocess
 from pathlib import Path
 
 from heddle_workspace import git, manifest, overlay, wizard
@@ -89,7 +90,59 @@ def run(args: argparse.Namespace) -> int:
         print("initialized umbrella git repo")
 
     _stage_and_commit(root, m)
-    _print_next_steps(name, umbrella_remote)
+
+    if args.create_remote:
+        if not umbrella_remote:
+            print(
+                "\n--create-remote: no umbrella_remote in manifest; "
+                "re-run with --project-org or add a remote and try again."
+            )
+            return 1
+        return _create_remote(root, name, umbrella_remote, public=args.public)
+
+    _print_next_steps(name, umbrella_remote, public=args.public)
+    return 0
+
+
+def _create_remote(root: Path, name: str, umbrella_remote: str, *, public: bool) -> int:
+    if not shutil.which("gh"):
+        print(
+            "\n--create-remote requires the GitHub CLI (`gh`). "
+            "Install it from https://cli.github.com/ and re-run, "
+            "or create the repo manually:"
+        )
+        _print_next_steps(name, umbrella_remote, public=public)
+        return 1
+    org = _org_from_remote(umbrella_remote)
+    if not org:
+        print(
+            f"\n--create-remote: could not parse org from {umbrella_remote}; "
+            "create the repo manually."
+        )
+        return 1
+    visibility = "--public" if public else "--private"
+    label = "PUBLIC" if public else "private"
+    print()
+    print(f"Creating {label} GitHub repo: {org}/{name}")
+    try:
+        subprocess.run(
+            [
+                "gh", "repo", "create", f"{org}/{name}",
+                visibility, "--source=.", "--remote=origin", "--push",
+            ],
+            cwd=root,
+            check=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        print(f"\ngh repo create failed (exit {exc.returncode}).")
+        return exc.returncode
+    if public:
+        print()
+        print(
+            "Note: this umbrella was created PUBLIC by explicit request. "
+            "If that was unintended, run "
+            f"`gh repo edit {org}/{name} --visibility private` now."
+        )
     return 0
 
 
@@ -131,20 +184,36 @@ def _stage_and_commit(root: Path, m: Manifest) -> None:
     print(f"committed: {msg}")
 
 
-def _print_next_steps(name: str, umbrella_remote: str | None) -> None:
+def _print_next_steps(
+    name: str, umbrella_remote: str | None, *, public: bool = False
+) -> None:
+    visibility = "--public" if public else "--private"
     print()
     print("Next steps:")
+    print(
+        "  The umbrella holds your workspace's coordination state and "
+        "(optionally) loose docs. Default visibility is PRIVATE — only "
+        "pass --public if you have a specific reason and confirm it twice."
+    )
     if umbrella_remote:
-        print(f"  1. Create the private GitHub repo for {name}:")
-        org = _org_from_remote(umbrella_remote)
-        if org:
-            print(f"     gh repo create {org}/{name} --private --source=. --remote=origin")
-        else:
-            print(f"     gh repo create <org>/{name} --private --source=. --remote=origin")
+        org = _org_from_remote(umbrella_remote) or "<org>"
+        print(f"  1. Create the GitHub repo for {name}:")
+        print(
+            f"     gh repo create {org}/{name} {visibility} "
+            "--source=. --remote=origin"
+        )
         print("  2. Push:")
         print("     git push -u origin main")
+        print()
+        print(
+            "  Or let `workspace init --create-remote` do both for you "
+            "(private by default; add --public to override)."
+        )
     else:
-        print("  Create the umbrella's GitHub repo (gh repo create ... --private) and push.")
+        print(
+            f"  Create the umbrella's GitHub repo (gh repo create ... {visibility}) "
+            "and push."
+        )
     print("  Then on another machine: `workspace link <umbrella-remote>`.")
 
 
