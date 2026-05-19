@@ -205,6 +205,48 @@ Full reference in `docs/WORKSPACE_SYNC_DESIGN.md`. Briefly:
 | `workspace rm <path>` | Remove a manifest entry (working tree untouched). |
 | `workspace doctor` | Verify each manifest remote is reachable and `.gitignore` covers every entry. |
 
+## Sibling conventions to know
+
+A few repo-level conventions are easy to miss when crossing siblings;
+they're recorded here so agents and skills don't re-discover them
+each session.
+
+### `heddle/` — test layout
+
+- Tests for any `heddle.contrib.<pkg>.*` module MUST live in
+  `tests/contrib/<pkg>/`. No top-level `test_contrib_*.py` files; no
+  top-level `test_<contrib-module>_*.py` files. No exceptions.
+- Tests for non-contrib modules currently live flat at
+  `tests/test_*.py`. This is legacy. New non-contrib tests SHOULD
+  prefer a sub-tree mirror (e.g., `tests/orchestrator/test_*.py`)
+  when introducing one is straightforward. Existing top-level tests
+  migrate opportunistically when touched, not as a batch.
+- Canonical example of the contrib pattern: `tests/contrib/events/`,
+  introduced in Sprint 1 of the M2 plan
+  (`heddle-contrib-events-m2-architecture-v7.md`).
+- File naming inside a `tests/contrib/<pkg>/` sub-tree drops the
+  redundant prefix — the directory tells you the package. E.g.
+  `tests/contrib/duckdb/test_query.py`, not
+  `tests/contrib/duckdb/test_contrib_duckdb_query.py`.
+- Shared test fixtures live in `heddle/tests/fixtures.py` (pytest
+  fixture module, imported via conftest if needed). Public test
+  utilities meant for downstream-app reuse live in
+  `heddle/src/heddle/contrib/<pkg>/testing.py` and ARE part of the
+  package's public surface.
+
+### `heddle-sdk/` — Swift test framework
+
+- The active Swift test runner is **Swift Testing** (`@Test`,
+  `#expect`, `#require`). Requires Swift 6.2+ with Testing 6.3.1+.
+- Do NOT use `XCTestCase`. On this toolchain `canImport(XCTest)` is
+  false; XCTest-wrapped tests compile to empty translation units
+  and never register, producing silent green CI with no tests
+  executed.
+- Tests that must run under both runtimes (rare) use the
+  `#if canImport(XCTest) … #elseif canImport(Testing) … #endif`
+  split shown in `swift/Tests/HeddleActorTests/SubjectTests.swift`.
+- This applies to every Swift test addition across the workspace.
+
 ## Pointers to repo-level docs
 
 Once you know which repo(s) the work touches, drop into the repo's own
