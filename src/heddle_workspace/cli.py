@@ -33,6 +33,9 @@ from heddle_workspace import (
 from heddle_workspace import (
     machine as cmd_machine,
 )
+from heddle_workspace import (
+    scaffold as cmd_scaffold,
+)
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -163,6 +166,16 @@ def _build_parser() -> argparse.ArgumentParser:
         help="overwrite an existing machine.yaml",
     )
     mi.set_defaults(func=cmd_machine.run)
+
+    s = sub.add_parser(
+        "scaffold",
+        help=(
+            "retro-fit the workflow conventions (AGENTS.md, roadmap/, "
+            "session-starters/) into an existing workspace. Idempotent: "
+            "existing files are left untouched. Does not stage or commit."
+        ),
+    )
+    s.set_defaults(func=cmd_scaffold.run)
 
     return p
 
