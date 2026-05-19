@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import subprocess
 from pathlib import Path
 
 from heddle_workspace import agent_adapters
@@ -88,3 +90,25 @@ def test_index_docs_are_not_installed_as_claude_agents(tmp_path: Path) -> None:
     agent_adapters.install(workspace, codex_home=codex_home)
 
     assert not (workspace / ".claude" / "agents" / "INDEX.md").exists()
+
+
+def test_install_agent_adapters_shim_accepts_no_extra_args(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    codex_home = tmp_path / "codex"
+    workspace.mkdir()
+    (workspace / "AGENTS.md").write_text("# Agent instructions\n")
+
+    env = os.environ.copy()
+    env["CODEX_HOME"] = str(codex_home)
+    script = agent_adapters.toolkit_root() / "bin" / "install-agent-adapters"
+
+    subprocess.run(
+        [str(script), "--workspace", str(workspace)],
+        capture_output=True,
+        env=env,
+        text=True,
+        check=True,
+    )
+
+    assert (workspace / ".agents" / "skills" / "heddle-orient").is_symlink()
+    assert (codex_home / "skills" / "heddle" / "heddle-orient").is_symlink()

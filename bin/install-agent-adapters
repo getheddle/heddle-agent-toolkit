@@ -43,4 +43,8 @@ while [ -L "$SOURCE" ]; do
 done
 BIN_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 
+if [[ ${#args[@]} -eq 0 ]]; then
+    exec "$BIN_DIR/workspace" -C "$workspace" agent-adapters install
+fi
+
 exec "$BIN_DIR/workspace" -C "$workspace" agent-adapters install "${args[@]}"
