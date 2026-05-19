@@ -15,6 +15,16 @@ format model.
 
 ## [Unreleased]
 
+### Fixed
+
+- `workspace init` and `workspace status` no longer treat symlinked
+  directories as separate repos. A backward-compat alias (e.g. a
+  `heddle-agent-toolkit → heddle-workspace` symlink during a rename
+  window) used to produce a duplicate manifest entry on `init` and an
+  "orphan" line on `status`. Both now skip symlinks. Three new tests
+  in `tests/test_init.py` pin the detection behavior (symlink-skip,
+  ordinary-repo passthrough, carve-out + hidden-dir filtering).
+
 ### Added
 
 - **Overlay mechanism** — share files that conceptually belong inside a

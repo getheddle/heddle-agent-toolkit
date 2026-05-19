@@ -45,6 +45,10 @@ def run(args: argparse.Namespace) -> int:
     for entry in sorted(root.iterdir()):
         if not entry.is_dir() or entry.name.startswith("."):
             continue
+        if entry.is_symlink():
+            # Symlinks to a manifest entry (e.g. a backward-compat alias)
+            # aren't real orphans — they're just aliases.
+            continue
         if entry.name == LOCAL_ONLY_DIR:
             continue
         if entry.name in manifest_paths:

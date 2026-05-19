@@ -14,11 +14,17 @@ from heddle_workspace.manifest import LOCAL_ONLY_DIR, Manifest, RepoEntry
 def detect_child_repos(root: Path) -> list[tuple[Path, str, str]]:
     """Return (path, remote, branch) for each immediate-child git repo with a remote.
 
-    Hidden dirs and the `(local-only)` carve-out are skipped.
+    Hidden dirs, the `(local-only)` carve-out, and symlinks are skipped.
+    Symlinks to git repos (e.g. a backward-compat alias for a renamed
+    sibling) resolve to a directory that is already detected, and adding
+    them would create duplicate manifest entries pointing at the same
+    remote.
     """
     found = []
     for entry in sorted(root.iterdir()):
         if not entry.is_dir():
+            continue
+        if entry.is_symlink():
             continue
         if entry.name.startswith("."):
             continue
