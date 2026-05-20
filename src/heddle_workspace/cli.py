@@ -13,6 +13,9 @@ from heddle_workspace import (
     agent_adapters as cmd_agent_adapters,
 )
 from heddle_workspace import (
+    audit_repro as cmd_audit_repro,
+)
+from heddle_workspace import (
     doctor as cmd_doctor,
 )
 from heddle_workspace import (
@@ -22,25 +25,22 @@ from heddle_workspace import (
     link as cmd_link,
 )
 from heddle_workspace import (
+    machine as cmd_machine,
+)
+from heddle_workspace import (
+    overlay_cmd as cmd_overlay,
+)
+from heddle_workspace import (
     rm as cmd_rm,
+)
+from heddle_workspace import (
+    scaffold as cmd_scaffold,
 )
 from heddle_workspace import (
     status as cmd_status,
 )
 from heddle_workspace import (
     sync as cmd_sync,
-)
-from heddle_workspace import (
-    overlay_cmd as cmd_overlay,
-)
-from heddle_workspace import (
-    machine as cmd_machine,
-)
-from heddle_workspace import (
-    scaffold as cmd_scaffold,
-)
-from heddle_workspace import (
-    audit_repro as cmd_audit_repro,
 )
 
 

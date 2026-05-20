@@ -317,11 +317,13 @@ def format_report(
         lines.append("")
         lines.append(f"-- {labels[i]} vs {labels[j]}: divergences --")
         for f in m.only_a:
-            lines.append(f"  only {labels[i]} [{f.severity}] {f.concern_key} "
-                         f"({f.file}:{f.line})")
+            lines.append(
+                f"  only {labels[i]} [{f.severity}] {f.concern_key} ({f.file}:{f.line})"
+            )
         for f in m.only_b:
-            lines.append(f"  only {labels[j]} [{f.severity}] {f.concern_key} "
-                         f"({f.file}:{f.line})")
+            lines.append(
+                f"  only {labels[j]} [{f.severity}] {f.concern_key} ({f.file}:{f.line})"
+            )
         for fa, fb in m.contradictions:
             lines.append(
                 f"  CONTRADICTION {fa.concern_key} "
