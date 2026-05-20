@@ -19,6 +19,7 @@ should read only the relevant `SKILL.md` on demand.
 | [`heddle-new-worker`](heddle-new-worker/SKILL.md) | Scaffold or review a worker config that respects contracts. |
 | [`cross-repo-pr`](cross-repo-pr/SKILL.md) | Coordinate paired pull requests across upstream and downstream repos. |
 | [`warp-adr`](warp-adr/SKILL.md) | Create or format a `warp-design` ADR. |
+| [`audit-cycle`](audit-cycle/SKILL.md) | Drive a workspace audit → maintenance-plan → implement loop. |
 
 Install adapters from a workspace root:
 

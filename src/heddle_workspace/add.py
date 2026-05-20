@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from heddle_workspace import git, manifest
+from heddle_workspace import audits, git, manifest
 from heddle_workspace.manifest import LOCAL_ONLY_DIR, RepoEntry
 
 
@@ -41,5 +41,7 @@ def run(args: argparse.Namespace) -> int:
     manifest.save(root, m)
     (root / ".gitignore").write_text(manifest.render_gitignore(m))
     print(f"added: {path_str}  ←  {remote}  ({branch})")
+    for created in audits.ensure_audit_dirs(root, m):
+        print(f"wrote {created.relative_to(root)}/")
     print("staged .heddle-workspace.yaml and .gitignore — review and commit.")
     return 0

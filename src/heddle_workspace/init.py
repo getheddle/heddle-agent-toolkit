@@ -7,7 +7,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from heddle_workspace import git, manifest, overlay, wizard
+from heddle_workspace import audits, git, manifest, overlay, wizard
 from heddle_workspace.manifest import LOCAL_ONLY_DIR, Manifest, RepoEntry
 
 
@@ -87,6 +87,8 @@ def run(args: argparse.Namespace) -> int:
     _ensure_local_only(root)
     overlay.ensure_overlays_dir(root)
     _scaffold_workflow_conventions(root, name)
+    for created in audits.ensure_audit_dirs(root, m):
+        print(f"wrote {created.relative_to(root)}/")
 
     if args.no_commit:
         print("--no-commit: skipped staging and committing.")
@@ -165,6 +167,7 @@ _SCAFFOLD_FILES = {
     "AGENTS.md": "AGENTS.md",
     "roadmap/README.md": "roadmap-README.md",
     "session-starters/README.md": "session-starters-README.md",
+    "audits/README.md": "audits-README.md",
 }
 
 

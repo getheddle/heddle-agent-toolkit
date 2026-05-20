@@ -43,6 +43,9 @@ User-invokable workflows. The full list is in
 - `/heddle-preflight` — repo-aware pre-commit checks
 - `/heddle-new-worker` — scaffold a worker config that respects contracts
 - `/warp-adr` — create/format a warp-design ADR
+- `/audit-cycle` — drive a workspace audit → maintenance-plan → implement
+  loop. See [`docs/AUDITS.md`](docs/AUDITS.md) for the audit type
+  catalog and document shape.
 
 Skills are progressive-disclosure: invoking one loads its `SKILL.md` into
 context. Don't read all skill files speculatively.
@@ -60,6 +63,18 @@ job. Defined in [`agents/INDEX.md`](agents/INDEX.md):
 - `heddle-contract-reviewer` — cross-repo wire-protocol coherence. Use
   when changes touch `heddle.core.messages`, `schemas/v1/*`, .NET models,
   Swift models, or subject conventions.
+- `audit-runner` — performs a typed workspace audit (`security`,
+  `deps`, `schema`, `contrib`, `docs-editorial`, `docs-technical`,
+  `docs-persona`, `perf`, `invariants`, `data`) and writes the report
+  under `audits/<repo>-audits/`. Type catalog in
+  [`docs/AUDITS.md`](docs/AUDITS.md); persona catalog in
+  [`docs/AUDIENCE_PERSONAS.md`](docs/AUDIENCE_PERSONAS.md).
+- `maintenance-planner` — *(stub)* converts an audit into a
+  `session-starters/<repo>-<topic>-<date>/` cycle.
+- `maintenance-implementer` — *(stub)* executes one lettered session
+  from a maintenance cycle.
+- `audit-cycle-coordinator` — *(stub)* drives the audit → plan →
+  implement loop end-to-end; invocable on a schedule.
 
 ### Agent adapters
 

@@ -44,18 +44,30 @@ roadmap thinking to an executable session is a loose prompt file in
 persistent home is a **cycle subfolder** inside `session-starters/`,
 with a `0-roadmap-overview.md` index plus thematic sibling sessions
 lettered A through K. The source of items is always a review
-artifact (repository review, security audit, dep audit, perf
-profile, etc.) — never invented from imagination.
+artifact (audit report) under [`audits/`](audits/) — never invented
+from imagination.
+
+The audit ↔ cycle link is **mechanical, by name** (see
+[`audits/README.md`](audits/README.md)):
+
+```
+audit:  audits/<repo>-audits/<topic>-audit-<YYYY-MM-DD>(.md|/)
+cycle:  session-starters/<repo>-<topic>-<YYYY-MM-DD>/
+```
+
+Per-repo audit subfolders are created lazily by `workspace init` /
+`workspace add` and preserved when a repo is removed. The audit-type
+catalog and audit document shape live in
+[`heddle-workspace/docs/AUDITS.md`](heddle-workspace/docs/AUDITS.md).
 
 If you are not sure which kind your task is:
 
 - "Build X" → feature work → `roadmap/`.
-- "Fix the findings in review Y" → maintenance work →
-  `session-starters/<cycle>/`.
-- "Audit Z" → produces a review artifact that becomes the seed of a
-  new maintenance cycle.
-- "Upgrade lib W to vN" → maintenance work; create or extend a
-  `dep-audit-<date>` cycle.
+- "Fix the findings in audit Y" → maintenance work →
+  `session-starters/<repo>-<topic>-<date>/`.
+- "Audit Z" → run the `audit-runner` subagent; the report lands in
+  `audits/<repo>-audits/` and seeds a new maintenance cycle.
+- "Upgrade lib W to vN" → maintenance work, seeded by a `deps` audit.
 
 ## Workspace-level vs. repo-level
 
@@ -64,7 +76,7 @@ If you are not sure which kind your task is:
 | Agent adapters pointing to toolkit skills + subagents | Repo-local agent commands and instructions |
 | Cross-cutting design docs and specs that span repos | Repo-internal docs |
 | This `AGENTS.md` | Each repo's own `AGENTS.md` |
-| `roadmap/` + `session-starters/` | Repo-internal CHANGELOG + issues |
+| `roadmap/` + `session-starters/` + `audits/` | Repo-internal CHANGELOG + issues |
 
 For repo-specific verification commands and module layout, read the
 relevant sibling's own `AGENTS.md`.

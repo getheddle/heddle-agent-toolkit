@@ -80,6 +80,8 @@ getheddle.github.io           org-level overview site (planned → getheddle.dev
 | Work in heddle-sdk | `heddle-sdk/AGENTS.md` |
 | Work across siblings from the workspace root | `anchors/WORKSPACE.md` |
 | Write a warp ADR | `warp-design/decisions/` (existing ADRs as format reference) |
+| Run or read a workspace audit | `<workspace>/audits/README.md`, `heddle-workspace/docs/AUDITS.md` |
+| Audit docs from one audience's view | `heddle-workspace/docs/AUDIENCE_PERSONAS.md` |
 
 ## Which subagent for what
 
@@ -88,6 +90,14 @@ getheddle.github.io           org-level overview site (planned → getheddle.dev
   `heddle-invariant-guard`.
 - Diff that touches `core/messages.py`, `schemas/v1/*`, .NET models, or
   Swift models → spawn `heddle-contract-reviewer`.
+- "Audit `<repo>` for `<type>`" → spawn `audit-runner` (or invoke
+  `/audit-cycle` for the full audit → plan → implement loop). Type
+  catalog in `heddle-workspace/docs/AUDITS.md`; doc audits split into
+  `docs-editorial` / `docs-technical` / `docs-persona`.
+- "Plan a maintenance cycle from this audit" → `maintenance-planner`
+  *(stub)*. Implement one letter → `maintenance-implementer` *(stub)*.
+  Run the whole loop, possibly scheduled → `audit-cycle-coordinator`
+  *(stub)*.
 
 ## Machine profile
 
