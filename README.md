@@ -68,7 +68,7 @@ The workspace and the three pillars:
 
 ```mermaid
 flowchart LR
-  subgraph WS["pf-heddle-workspace/  (umbrella git repo)"]
+  subgraph WS["your-workspace/  (umbrella git repo)"]
     direction TB
     HW["heddle-workspace/<br/><i>this toolkit</i>"]
     H["heddle/<br/><i>framework</i>"]

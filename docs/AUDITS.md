@@ -46,7 +46,7 @@ session cycle. Add a new type only when an existing one is a poor fit.
 | `docs-persona` | Reads the docs from one persona's viewpoint (Operator, Worker Author, Framework Contributor, Cluster Operator, Evaluator). Requires a `persona:` argument. | One repo's `docs/`, one persona |
 | `perf` | Hot paths, query patterns, allocations; produces a profile, not just notes | Typically one process |
 | `invariants` | Framework-wide check against `heddle-workspace/anchors/INVARIANTS.md` | One repo or cross-repo |
-| `data` | ProfitFab/TopSpeed data shape, stale rows, schema drift on the SQL side | shoppulse / data peers |
+| `data` | A consuming app's data/persistence layer: row-shape, stale/orphan rows, schema drift between code and the database | one app's data layer / external data source |
 
 A multi-dimensional audit (folder form) typically combines lenses —
 e.g. a `contrib-events` audit folder might contain `invariants.md`,
