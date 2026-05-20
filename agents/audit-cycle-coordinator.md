@@ -1,14 +1,16 @@
 ---
 name: audit-cycle-coordinator
-description: Drives an end-to-end audit → plan → implement loop. Spawns `audit-runner`, then `maintenance-planner`, then `maintenance-implementer` for each lettered session, surfacing blockers and decision points back to the caller. Invocable interactively or on a schedule (`schedule` / `loop` / `CronCreate`) — the agent itself is stateless. Stub — full body TBD; treat the responsibilities below as the contract.
-status: stub
+description: Drives an end-to-end audit → plan → implement loop. Spawns `audit-runner`, then `maintenance-planner`, then `maintenance-implementer` for each lettered session, surfacing blockers and decision points back to the caller. Invocable interactively or on a schedule (`schedule` / `loop` / `CronCreate`) — the agent itself is stateless. Field-tested 2026-05-19; the responsibilities below are its contract.
+status: validated
 ---
 
 # audit-cycle-coordinator
 
-**Status:** stub. The responsibilities below are the contract this
-agent is expected to fulfill; the runtime body will be written after
-the first end-to-end pass of the audit→plan→implement loop.
+**Status:** validated (plan-only dry-run 2026-05-19): correctly halted at
+loop-shape step 2 on the non-empty `Decision points`, did NOT spawn the
+implementer, and surfaced the 3 decisions as its primary deliverable
+rather than plowing through them. The responsibilities below are its
+contract.
 
 ## Responsibility
 

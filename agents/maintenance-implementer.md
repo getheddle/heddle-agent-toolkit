@@ -1,14 +1,18 @@
 ---
 name: maintenance-implementer
-description: Executes one session from a maintenance cycle subfolder (`session-starters/<cycle>/<letter>-<theme>.md`), making the smallest correct change in the target sibling repo and writing the paired `-feedback.md` per the sprint-feedback protocol. Stub — full body TBD; treat the responsibilities below as the contract.
-status: stub
+description: Executes one session from a maintenance cycle subfolder (`session-starters/<cycle>/<letter>-<theme>.md`), making the smallest correct change in the target sibling repo and writing the paired `-feedback.md` per the sprint-feedback protocol. Validated 2026-05-19 after human review of the field-test diff.
+status: validated
 ---
 
 # maintenance-implementer
 
-**Status:** stub. The responsibilities below are the contract this
-agent is expected to fulfill; the runtime body will be written after
-the first end-to-end pass of the audit→plan→implement loop.
+**Status:** validated (field-tested 2026-05-19 on the mandated safe
+session — comments/TODOs only, throwaway branch
+`audit-fieldtest/maint-implementer-session-c`: mechanically-verified
+clean diff of 8 comment insertions, **zero** non-comment line changes,
+tests green, no commit/push/PR, and it correctly declined to mark the
+MUST findings it was documenting. Human-reviewed and the field-test
+branch retired). The responsibilities below are its contract.
 
 ## Responsibility
 

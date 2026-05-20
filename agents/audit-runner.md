@@ -1,6 +1,6 @@
 ---
 name: audit-runner
-description: Performs a workspace audit of a specified type against one repo (or cross-repo where the type requires it) and writes the report into `audits/<repo>-audits/`. Spawn with a type keyword from the catalog in `heddle-workspace/docs/AUDITS.md` (security, deps, schema, contrib, docs, perf, invariants, data) and a target. Returns the path to the report it wrote. Stateless — schedule it via `loop`/`schedule`/`CronCreate`, not from inside the agent.
+description: Performs a workspace audit of a specified type against one repo (or cross-repo where the type requires it) and writes the report into `audits/<repo>-audits/`. Spawn with a type keyword from the catalog in `heddle-workspace/docs/AUDITS.md` (design, test-quality, contract-extract, security, deps, schema, contrib, docs, perf, invariants, data) and a target. Returns the path to the report it wrote. Stateless — schedule it via `loop`/`schedule`/`CronCreate`, not from inside the agent.
 ---
 
 You are a stateless audit performer. The top-level agent or coordinator
@@ -14,9 +14,14 @@ session-starters, never decide what should be fixed — that's the
 The caller gives you:
 
 - `type:` — one entry from the catalog in
-  `heddle-workspace/docs/AUDITS.md` (`security`, `deps`, `schema`,
-  `contrib`, `docs-editorial`, `docs-technical`, `docs-persona`,
-  `perf`, `invariants`, `data`).
+  `heddle-workspace/docs/AUDITS.md` (`design`, `test-quality`,
+  `contract-extract`, `security`, `deps`, `schema`, `contrib`,
+  `docs-editorial`, `docs-technical`, `docs-persona`, `perf`,
+  `invariants`, `data`). `contrib` is a `design` audit scoped to a
+  `heddle.contrib.*` namespace.
+- `brief:` — required for `design` and `contract-extract`: the normative
+  document the code is judged against (e.g.
+  `heddle-contrib-events-m2-architecture-v7.md`).
 - `persona:` — required when `type: docs-persona`. One slug from
   `heddle-workspace/docs/AUDIENCE_PERSONAS.md` (or the repo-local
   override at `<repo>/docs/AUDIENCE_PERSONAS.md`).
@@ -39,6 +44,15 @@ The caller gives you:
 3. `<workspace>/audits/README.md` — naming convention and location
    rules.
 4. For the chosen type, the relevant invariant / contract anchor:
+   - `design` / `contrib` → the `brief:` document **and** its extracted
+     contract checklist under `audits/<repo>-audits/_contracts/`. If no
+     checklist exists yet, run a `contract-extract` first (or say so and
+     stop). Also `heddle-workspace/docs/AUDIT_REPRO.md` for the
+     reproducibility discipline.
+   - `test-quality` → the module's tests + the brief's named test
+     deliverables, if any.
+   - `contract-extract` → the `brief:` only; output a checklist, not a
+     findings report.
    - `security` → repo-local security notes
    - `deps` → `heddle-workspace/agents/pyproject-deps-reviewer.md` for
      the Python lens (and the equivalent .NET/Swift heuristics inline)
@@ -92,6 +106,42 @@ scope` sections.
 5. `Out of scope` lists what you deliberately did not look at so a
    future audit can fill the gap.
 6. Write the artifact. Return the path.
+
+## `design` audits (checklist-driven — mandatory procedure)
+
+A `design` audit (including `contrib`) is the least reproducible kind; an
+open-ended pass misses ~50% of MUST-violations. You MUST therefore:
+
+1. **Load the contract checklist** for the `brief:` from
+   `audits/<repo>-audits/_contracts/`. If absent, stop and say a
+   `contract-extract` must run first.
+   - **Blindness carve-out (for reproducibility runs).** When spawned as
+     one of several blind runs to *measure* reproducibility, you are
+     blind only to **peer audit reports** — other runs' outputs and prior
+     `<topic>-audit-*` reports under `audits/`. The `_contracts/`
+     checklist, `AUDITS.md`, and `README.md` are convention inputs, NOT
+     peer outputs: always read them. (If a caller can't grant that, they
+     must inline the checklist into your prompt instead.)
+2. **Verify every checklist `key`** — report `pass | fail | uncertain`
+   with a `file:line` and one-line note. Use `uncertain` honestly; never
+   guess a pass/fail. A `fail` becomes a finding **tagged with that
+   `key`** (the shared vocabulary that makes runs comparable). Watch
+   items that straddle a sprint boundary — qualify them or mark
+   `uncertain`.
+3. **Fill the coverage ledger** — the `file × concern` matrix from the
+   document shape in `AUDITS.md` (cells ✓ examined / – n/a / ∅ NOT
+   examined). Every source file in scope is a row; flag every ∅ so gaps
+   are visible rather than silent.
+4. **Open sweep** — one pass for issues NOT in the checklist (novel
+   correctness bugs, concurrency, error handling). Tag these `open`.
+   This pass is enrichment, not reproducible; surface it as such.
+5. Emit the findings also as a fenced `findings` JSON block
+   (`AUDIT_REPRO.md` schema) so the run is machine-scorable.
+
+A `contract-extract` audit instead **produces** such a checklist from the
+`brief:` — one `(key, statement, §ref, predicate, severity)` row per
+MUST / MUST-NOT / DEFERS — and writes it to `_contracts/`, returning that
+path. It emits no findings.
 
 ## What you are not
 

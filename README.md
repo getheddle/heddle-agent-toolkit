@@ -137,9 +137,9 @@ mechanism your agent supports. Each definition is a single `.md` under
 | [`mkdocs-doc-reviewer`](agents/mkdocs-doc-reviewer.md) | A diff touches `docs/`, `mkdocs.yml`, or included Markdown. | Catches nav drift, broken refs, stale code blocks. |
 | [`pyproject-deps-reviewer`](agents/pyproject-deps-reviewer.md) | A diff touches `pyproject.toml` or `uv.lock`. | License compatibility (MPL-2.0), missing extras, version skew. |
 | [`audit-runner`](agents/audit-runner.md) | "Audit `<repo>` for `<type>`." Type catalog in [`docs/AUDITS.md`](docs/AUDITS.md). | Produces the durable audit artifact that seeds a maintenance cycle. Stateless — scheduleable. |
-| [`maintenance-planner`](agents/maintenance-planner.md) *(stub)* | A completed audit needs to become an executable maintenance cycle. | Converts findings into lettered session briefs; refuses to plan items in `Decision points`. |
-| [`maintenance-implementer`](agents/maintenance-implementer.md) *(stub)* | One lettered session brief in a cycle is ready to execute. | Surgical, single-letter execution with paired feedback — never grabs more scope than the brief. |
-| [`audit-cycle-coordinator`](agents/audit-cycle-coordinator.md) *(stub)* | Drive the whole audit → plan → implement loop, especially when unattended. | Composition over inheritance — one agent that orchestrates the other three. Scheduleable via `/schedule`, `/loop`, or `CronCreate`. |
+| [`maintenance-planner`](agents/maintenance-planner.md) *(validated)* | A completed audit needs to become an executable maintenance cycle. | Converts findings into lettered session briefs; refuses to plan items in `Decision points`. |
+| [`maintenance-implementer`](agents/maintenance-implementer.md) *(validated)* | One lettered session brief in a cycle is ready to execute. | Surgical, single-letter execution with paired feedback — never grabs more scope than the brief. |
+| [`audit-cycle-coordinator`](agents/audit-cycle-coordinator.md) *(validated)* | Drive the whole audit → plan → implement loop, especially when unattended. | Composition over inheritance — one agent that orchestrates the other three. Scheduleable via `/schedule`, `/loop`, or `CronCreate`. |
 
 ### Anchors — read-deeper docs (not user-invokable)
 

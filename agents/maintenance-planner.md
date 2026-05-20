@@ -1,14 +1,16 @@
 ---
 name: maintenance-planner
-description: Reads a completed audit under `audits/<repo>-audits/` and writes a maintenance cycle subfolder under `session-starters/<repo>-<topic>-<date>/` — `0-roadmap-overview.md` plus lettered thematic sibling sessions. Flags items in the audit's `Decision points` section as needing human input before they can be planned. Stub — full body TBD; treat the responsibilities below as the contract.
-status: stub
+description: Reads a completed audit under `audits/<repo>-audits/` and writes a maintenance cycle subfolder under `session-starters/<repo>-<topic>-<date>/` — `0-roadmap-overview.md` plus lettered thematic sibling sessions. Flags items in the audit's `Decision points` section as needing human input before they can be planned. Field-tested 2026-05-19; the responsibilities below are its contract.
+status: validated
 ---
 
 # maintenance-planner
 
-**Status:** stub. The responsibilities below are the contract this
-agent is expected to fulfill; the runtime body will be written after
-the first end-to-end pass of the audit→plan→implement loop.
+**Status:** validated (field-tested 2026-05-19 against the
+`contrib-events-audit-2026-05-19` design audit — correctly produced 8
+decision-independent sessions and surfaced 3 decision points as blocked,
+withholding the gated findings). The responsibilities below are its
+contract.
 
 ## Responsibility
 

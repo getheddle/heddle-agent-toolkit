@@ -29,10 +29,14 @@ the job; don't run the coordinator for a single audit.
 | "Run the full audit/fix loop on `<topic>`." | Full loop | `audit-cycle-coordinator` |
 | Scheduled / unattended run | Full loop, no human | `audit-cycle-coordinator` via `loop` / `schedule` / `CronCreate` |
 
-The supported `type:` keywords (`security`, `deps`, `schema`,
-`contrib`, `docs-editorial`, `docs-technical`, `docs-persona`,
-`perf`, `invariants`, `data`) and the audit document shape are in
-[`heddle-workspace/docs/AUDITS.md`](../../docs/AUDITS.md). The
+The supported `type:` keywords (`design`, `test-quality`,
+`contract-extract`, `security`, `deps`, `schema`, `contrib`,
+`docs-editorial`, `docs-technical`, `docs-persona`, `perf`,
+`invariants`, `data`) and the audit document shape are in
+[`heddle-workspace/docs/AUDITS.md`](../../docs/AUDITS.md). A `design`
+audit (and `contrib`, now a `design` audit on a contrib namespace) is
+checklist-driven and takes a `brief:`; see the "Design-audit discipline"
+section there. The
 audience-persona list (Operator, Worker Author, Framework
 Contributor, Cluster Operator, Evaluator) lives in
 [`heddle-workspace/docs/AUDIENCE_PERSONAS.md`](../../docs/AUDIENCE_PERSONAS.md);
