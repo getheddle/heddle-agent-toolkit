@@ -39,6 +39,9 @@ from heddle_workspace import (
 from heddle_workspace import (
     scaffold as cmd_scaffold,
 )
+from heddle_workspace import (
+    audit_repro as cmd_audit_repro,
+)
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -179,6 +182,34 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     s.set_defaults(func=cmd_scaffold.run)
+
+    s = sub.add_parser(
+        "audit-repro",
+        help="measure audit reproducibility (Phase 0 of audit-subsystem hardening)",
+    )
+    arsub = s.add_subparsers(dest="audit_repro_command", required=True)
+    ars = arsub.add_parser(
+        "score",
+        help="score finding overlap across N>=2 audit runs (JSON or report files)",
+    )
+    ars.add_argument(
+        "findings",
+        nargs="+",
+        help="paths to N>=2 finding files (.json array or .md with a ```findings block)",
+    )
+    ars.add_argument(
+        "--line-window",
+        type=int,
+        default=cmd_audit_repro.DEFAULT_LINE_WINDOW,
+        help=f"line tolerance when matching (default: {cmd_audit_repro.DEFAULT_LINE_WINDOW})",
+    )
+    ars.add_argument(
+        "--concern-only",
+        action="store_true",
+        help="match on concern key alone (ignore file/line); closer to a human "
+        "semantic match, looser than the default file+line+concern matcher",
+    )
+    ars.set_defaults(func=cmd_audit_repro.run)
 
     s = sub.add_parser(
         "agent-adapters",

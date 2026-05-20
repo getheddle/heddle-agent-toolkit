@@ -1,0 +1,22 @@
+[
+  {"concern_key": "subjects-duplicated", "file": "contrib/events/subjects.py", "line": 40, "severity": "high", "summary": "two subject builders (subjects.py vs jetstream/stream_config.py), nothing forces byte-identical"},
+  {"concern_key": "p2-synchronous-handle", "file": "contrib/events/projectors/cascade.py", "line": 124, "severity": "high", "summary": "P2 holds a CommandHandler ref and calls handle() in-process instead of publishing"},
+  {"concern_key": "p3-restart-timer-loss", "file": "contrib/events/projectors/finalization_horizon.py", "line": 76, "severity": "high", "summary": "P3 in-memory timers lost on restart; quiesced candidate-closed aggregate never re-arms"},
+  {"concern_key": "inv8-malformed-event-crash", "file": "contrib/events/jetstream/event_log.py", "line": 117, "severity": "high", "summary": "no guard against ValidationError on event deserialization; malformed stored event crashes load/subscribe"},
+  {"concern_key": "no-dlq", "file": "contrib/events/dispatcher.py", "line": 113, "severity": "high", "summary": "dispatcher just logs failing projectors; no DLQ, no max-retry, no poison detection"},
+  {"concern_key": "cascade-swallows-errors", "file": "contrib/events/projectors/cascade.py", "line": 122, "severity": "medium", "summary": "ConcurrencyError swallowed with bare pass; in-memory has no replay loop so child never finalizes"},
+  {"concern_key": "unbounded-subscriber-queue", "file": "contrib/events/event_log.py", "line": 144, "severity": "medium", "summary": "subscriber asyncio.Queues unbounded; slow projector backs up memory with no backpressure"},
+  {"concern_key": "dedup-regression-pin", "file": "tests/contrib/events/test_command_handler.py", "line": 157, "severity": "medium", "summary": "test_dedup_was_per_call_in_sprint_2 pins 'harmless duplicate' as required; blocks correct fix"},
+  {"concern_key": "tests-private-attrs", "file": "tests/contrib/events/test_event_log.py", "line": 138, "severity": "medium", "summary": "private-attribute reach-through (._subscribers, ._timers, ._cache, ._handler, ._events)"},
+  {"concern_key": "thin-adversarial-suite", "file": "tests/contrib/events", "line": null, "severity": "medium", "summary": "~80% functional; adversarial tests cover only the easy cases"},
+  {"concern_key": "flaky-horizon-timing", "file": "tests/contrib/events/test_projector_finalization_horizon.py", "line": 90, "severity": "low", "summary": "sleeps 0.35s for a 0.1s horizon; publish round-trip can exceed slack under CI load"},
+  {"concern_key": "find-event-linear-scan", "file": "contrib/events/command_handler.py", "line": 243, "severity": "low", "summary": "_find_event_by_command_id self-documents O(n) Sprint-2 scan; documented deferral"},
+  {"concern_key": "jetstream-deliver-policy", "file": "contrib/events/jetstream/event_log.py", "line": 130, "severity": "medium", "summary": "non-durable push sub, no from_event_id; cold-start replay unsupported, deliver-policy drift"},
+
+  {"concern_key": "two-phase-candidate-closed", "file": "contrib/events/aggregate.py", "line": 228, "severity": "high", "summary": "code is created->active->finalized; brief mandates open<->candidate-closed->finalized + retraction (run-2 headline)"},
+  {"concern_key": "wire-contract-location", "file": "contrib/events/envelopes.py", "line": 42, "severity": "high", "summary": "EventEnvelope/CommandMessage live in contrib/events/envelopes.py, not core/messages.py per brief"},
+  {"concern_key": "internal-finalize-unrejectable", "file": "contrib/events/testing.py", "line": 128, "severity": "high", "summary": "fixtures reject InternalFinalize although brief says it MUST NOT define a rejection path"},
+  {"concern_key": "provenance-exception-type", "file": "contrib/events/aggregate.py", "line": 135, "severity": "medium", "summary": "forged-issuer raises CorruptAggregateAlert, a 4th exception type outside brief's allowable set"},
+
+  {"concern_key": "jetstream-cas", "file": "contrib/events/jetstream/event_log.py", "line": 73, "severity": "high", "stance": "finding", "summary": "real CAS correctness bug: subject includes event_type so per-subject seq != per-aggregate version"}
+]

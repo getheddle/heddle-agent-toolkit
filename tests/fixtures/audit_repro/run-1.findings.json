@@ -1,0 +1,22 @@
+[
+  {"concern_key": "subjects-duplicated", "file": "contrib/events/subjects.py", "line": 40, "severity": "high", "summary": "subject helpers duplicated, not byte-identical-guaranteed, between subjects.py and jetstream/stream_config.py"},
+  {"concern_key": "p2-synchronous-handle", "file": "contrib/events/projectors/cascade.py", "line": 124, "severity": "high", "summary": "P2 cascade calls handler synchronously instead of publishing InternalFinalize"},
+  {"concern_key": "p3-restart-timer-loss", "file": "contrib/events/projectors/finalization_horizon.py", "line": 76, "severity": "high", "summary": "P3 in-memory asyncio timers lost on restart; quiet aggregate never re-arms"},
+  {"concern_key": "inv8-malformed-event-crash", "file": "contrib/events/jetstream/event_log.py", "line": 130, "severity": "high", "summary": "Invariant 8 (skip-malformed) not honored for event deserialization; crashes the loop"},
+  {"concern_key": "no-dlq", "file": "contrib/events/jetstream/event_log.py", "line": 172, "severity": "high", "summary": "no DLQ on UnknownEventVersionError/AggregateInvariantError; brief mandates it"},
+  {"concern_key": "cascade-swallows-errors", "file": "contrib/events/projectors/cascade.py", "line": 122, "severity": "medium", "summary": "cascade swallows ConcurrencyError/CommandRejected silently, no observability"},
+  {"concern_key": "unbounded-subscriber-queue", "file": "contrib/events/event_log.py", "line": 144, "severity": "medium", "summary": "InMemoryEventLog.subscribe uses unbounded asyncio.Queue; slow subscriber leaks memory"},
+  {"concern_key": "dedup-regression-pin", "file": "tests/contrib/events/test_command_handler.py", "line": 157, "severity": "medium", "summary": "test_dedup_was_per_call_in_sprint_2 pins behavior that blocks the correct future dedup fix"},
+  {"concern_key": "tests-private-attrs", "file": "tests/contrib/events/test_event_log.py", "line": 138, "severity": "medium", "summary": "tests assert on private attributes (_subscribers, _timers, _cache, _events)"},
+  {"concern_key": "thin-adversarial-suite", "file": "tests/contrib/events", "line": null, "severity": "medium", "summary": "suite is adversarially thin; broad happy-path coverage, shallow failure-mode coverage"},
+  {"concern_key": "flaky-horizon-timing", "file": "tests/contrib/events/test_projector_finalization_horizon.py", "line": 90, "severity": "low", "summary": "timing-dependent horizon tests flaky under CI load"},
+  {"concern_key": "find-event-linear-scan", "file": "contrib/events/command_handler.py", "line": 248, "severity": "low", "summary": "_find_event_by_command_id is an O(n) linear scan on every dedup hit in no-cache path"},
+  {"concern_key": "jetstream-deliver-policy", "file": "contrib/events/jetstream/event_log.py", "line": 130, "severity": "medium", "summary": "subscribe uses default deliver policy; drifts from InMemoryEventLog deliver-future-only semantics"},
+
+  {"concern_key": "root-children-dead-field", "file": "contrib/events/aggregate.py", "line": 270, "severity": "high", "summary": "RootAggregate._children duplicates P1's responsibility; brief forbids it (run-1 headline)"},
+  {"concern_key": "apply-generic-exc-dlq", "file": "contrib/events/aggregate.py", "line": 160, "severity": "high", "summary": "apply() wraps generic exceptions as AggregateInvariantError (DLQ-routing) vs brief's redeliver"},
+  {"concern_key": "lease-key-divergence", "file": "contrib/events/lease.py", "line": 55, "severity": "medium", "summary": "lease key heddle:events:horizon:* diverges from brief's heddle:finalizing:* atomicity key"},
+  {"concern_key": "snapshot-torn-write", "file": "contrib/events/snapshot_store.py", "line": 67, "severity": "medium", "summary": "save() not atomic across snapshot/version keys; _version_key is redundant with JSON"},
+
+  {"concern_key": "jetstream-cas", "file": "contrib/events/jetstream/event_log.py", "line": 73, "severity": "medium", "stance": "ok", "summary": "Nats-Expected-Last-Subject-Sequence CAS 'correctly maps to the expected_version contract'"}
+]
