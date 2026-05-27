@@ -19,6 +19,7 @@ format model.
 
 - Formalized the **Middleware Lane** pattern in `anchors/CONTRACT_MAP.md` and added it as the 9th Red Line in `anchors/INVARIANTS.md`. This change centralizes the policy for underscore-prefixed envelope keys and provides a cross-reference to the framework invariant in the `heddle` repository.
 - **Workspace-root `AGENTS.md` is now generated from a single template.** `install.sh` copies `templates/workspace-init/AGENTS.md` (substituting the workspace name) instead of maintaining a divergent heredoc — the two had already drifted. The template absorbed the heredoc-only "Further tuning" (plugin + MCP) section, so drift between the two sources is now structurally impossible.
+  - **Migration:** existing workspaces keep the root `AGENTS.md` produced by the previous `install.sh` (it predates this merge — no feature/maintenance split, no `repo-init` pointer), because `install.sh` only writes that file when absent. To adopt the canonical template: port any local edits, delete the root `AGENTS.md`, and re-run `./heddle-workspace/install.sh --workspace .` — or merge the differences by hand.
 
 ### Fixed
 
