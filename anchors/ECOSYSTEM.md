@@ -16,7 +16,7 @@ Knowing which one owns what keeps changes coherent across the seam.
                                │ schemas vendored, wire conventions copied
                                ▼
                 ┌─────────────────────────────────────────────┐
-                │ heddle-sdk (.NET + Swift)                   │
+                │ heddle-sdk (.NET + Swift + JVM)             │
                 │   Foreign-language worker SDKs.             │
                 │   Vendors schemas/v1/*.schema.json.         │
                 │   Transport-agnostic core + NATS adapters.  │
@@ -58,7 +58,7 @@ shared.
 | NATS subject conventions | `heddle` |
 | Queue-group naming (`processors-{worker_type}`) | `heddle` |
 | Router rules, model tiers | `heddle` |
-| .NET / Swift contract models | `heddle-sdk` (derived from heddle schemas) |
+| .NET / Swift / JVM contract models | `heddle-sdk` (derived from heddle schemas) |
 | Transport adapters per language | `heddle-sdk` |
 | Vision, ADRs for the macOS cluster agent | `warp-design` |
 | The actual macOS daemon | `warp` (planned) |

@@ -31,7 +31,8 @@ model reference (`input_schema_ref` / `output_schema_ref`).
               heddle-sdk/schemas/manifest.json           ← records upstream commit + hashes
                           │
                           ├─► dotnet/src/Heddle.Sdk/Models/    (manually-aligned .NET models)
-                          └─► swift/Sources/HeddleActor/Models/ (manually-aligned Swift models)
+                          ├─► swift/Sources/HeddleActor/Models/ (manually-aligned Swift models)
+                          └─► jvm/core/src/main/kotlin/heddle/sdk/Models.kt (manually-aligned JVM models)
 ```
 
 The Python Pydantic models are authoritative. The JSON Schema files are
@@ -215,7 +216,7 @@ Drift on any of the three layers is recoverable but visible.
    exporter).
 3. Run `python tools/sync_schemas.py --update --upstream ../heddle` from
    `heddle-sdk` to vendor the new schemas.
-4. Add the field to the .NET and Swift models. Both must compile with
+4. Add the field to the .NET, Swift, and JVM models. Both must compile with
    the field omitted from incoming JSON.
 5. Update `docs/foreign-actors.md` in heddle if the field is observable
    to processor workers.
@@ -250,5 +251,6 @@ or a discussion before implementing.
 | Schema sync up to date | `python tools/sync_schemas.py --check` | `heddle-sdk/` |
 | .NET contract tests | `dotnet test dotnet/tests/Heddle.Sdk.Tests/Heddle.Sdk.Tests.csproj` | `heddle-sdk/` |
 | Swift contract tests | `swift test --package-path swift` | `heddle-sdk/` |
+| JVM contract tests | `./jvm/gradlew -p jvm test` | `heddle-sdk/` |
 | Python message tests | `uv run pytest tests/ -k messages` | `heddle/` |
 | Whole preflight | `/heddle-preflight` | anywhere |
