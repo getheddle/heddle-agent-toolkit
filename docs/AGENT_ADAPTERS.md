@@ -20,20 +20,38 @@ overwritten.
 
 ## Installed Adapters
 
-| Agent / format | Installed path | Purpose |
-|---|---|---|
-| Agent Skills standard | `.agents/skills/<skill>/` | Shared project skill location used by multiple newer agents. |
-| Aider | `.aider.conf.yml` | Loads `AGENTS.md` as read-only context. |
-| Cline | `.cline/rules/heddle-workspace.md`, `.cline/skills/<skill>/`, `.cline/agents/<agent>.md` | Native project rules, skills, and agent definitions. |
-| Claude Code | `.claude/skills/<skill>/`, `.claude/agents/<agent>.md` | Existing Claude Code discovery paths. |
-| Codex | `$CODEX_HOME/skills/heddle/<skill>/` or `~/.codex/skills/heddle/<skill>/` | Global Codex skill discovery. |
-| GitHub Copilot | `.github/copilot-instructions.md` | Repository-wide custom instructions, symlinked to `AGENTS.md`. |
-| Cursor | `.cursor/rules/heddle-workspace.mdc` | Project rule pointer with Cursor MDC frontmatter. |
-| Devin for Terminal | `.devin/skills/<skill>/` | Native project skills. |
-| Gemini CLI | `GEMINI.md` | Native context file, symlinked to `AGENTS.md`. |
-| Qwen Code | `QWEN.md`, `.qwen/skills/<skill>/` | Native context file and project skills. |
-| Windsurf | `.windsurf/rules/heddle-workspace.md`, `.windsurf/skills/<skill>/` | Native Cascade rules and skills. |
-| Zed | `.rules` | Native project rule file, symlinked to `AGENTS.md`. |
+| Agent / format | Installed path | Purpose | Repo-level discovery |
+|---|---|---|---|
+| Agent Skills standard | `.agents/skills/<skill>/` | Shared project skill location used by multiple newer agents. | hierarchical / tree-walk |
+| Aider | `.aider.conf.yml` | Loads `AGENTS.md` as read-only context. | repo-scoped |
+| Cline | `.cline/rules/heddle-workspace.md`, `.cline/skills/<skill>/`, `.cline/agents/<agent>.md` | Native project rules, skills, and agent definitions. | repo-scoped |
+| Claude Code | `.claude/skills/<skill>/`, `.claude/agents/<agent>.md` | Existing Claude Code discovery paths. | hierarchical / tree-walk |
+| Codex | `$CODEX_HOME/skills/heddle/<skill>/` or `~/.codex/skills/heddle/<skill>/` | Global Codex skill discovery. | hierarchical / tree-walk |
+| GitHub Copilot | `.github/copilot-instructions.md` | Repository-wide custom instructions, symlinked to `AGENTS.md`. | repo-scoped |
+| Cursor | `.cursor/rules/heddle-workspace.mdc` | Project rule pointer with Cursor MDC frontmatter. | repo-scoped |
+| Devin for Terminal | `.devin/skills/<skill>/` | Native project skills. | hierarchical / tree-walk |
+| Gemini CLI | `GEMINI.md` | Native context file, symlinked to `AGENTS.md`. | hierarchical / tree-walk |
+| Qwen Code | `QWEN.md`, `.qwen/skills/<skill>/` | Native context file and project skills. | hierarchical / tree-walk |
+| Windsurf | `.windsurf/rules/heddle-workspace.md`, `.windsurf/skills/<skill>/` | Native Cascade rules and skills. | hierarchical / tree-walk |
+| Zed | `.rules` | Native project rule file, symlinked to `AGENTS.md`. | repo-scoped |
+
+**Repo-level discovery** — how each agent finds its instruction/rules
+files relative to the directory tree:
+
+- **hierarchical / tree-walk** — walks up the directory tree (and for
+  some, down into subdirs), concatenating the files it finds; the
+  closest file wins.
+- **repo-scoped** — reads a fixed repo-relative path (e.g.
+  `.github/copilot-instructions.md`, `.cursor/rules/*.mdc`), not a
+  tree-walk merge.
+- **launch-dir** — reads only a single file at the launch directory,
+  with no upward walk. *(No installed adapter currently falls here.)*
+
+Verified against current public docs 2026-05-27 (per-agent sources in
+*Source Notes*). The column documents discovery behavior only — it does
+**not** change the installer, which remains single-root and does not yet
+wire repo-scoped agents (Copilot, Cursor, Cline, Aider, Zed) at the
+per-repo level. That stays a manual step for now.
 
 ## Source Notes
 

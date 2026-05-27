@@ -47,6 +47,7 @@ session cycle. Add a new type only when an existing one is a poor fit.
 | `perf` | Hot paths, query patterns, allocations; produces a profile, not just notes | Typically one process |
 | `invariants` | Framework-wide check against `heddle-workspace/anchors/INVARIANTS.md` | One repo or cross-repo |
 | `data` | A consuming app's data/persistence layer: row-shape, stale/orphan rows, schema drift between code and the database | one app's data layer / external data source |
+| `friction` | The workspace's own artifact set — anchors, roadmap tracks, glossary entries, operational templates, adopted tool bindings — asking of each: *what friction does this still solve?* Items that no longer pay their way get deprecated; shifted ones get re-scoped. The retrospective form of the *Anti-bureaucracy guardrail* (see `chat-first-project-development.md` v0.4, *Anti-bureaucracy guardrail → the retrospective form*). | The workspace artifact set, **not a code repo** (unlike every other type). `runtime: audit-mcp (pending)` — cataloged but not yet runnable through the four-agent pipeline; the runnable form is queued for the audit-mcp track. |
 
 A multi-dimensional audit (folder form) typically combines lenses —
 e.g. a `contrib-events` audit folder might contain `invariants.md`,
