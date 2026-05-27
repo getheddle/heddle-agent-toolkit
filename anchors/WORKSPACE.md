@@ -127,6 +127,70 @@ this machine. See [`docs/MACHINE_PROFILE.md`](../docs/MACHINE_PROFILE.md)
 for the schema and consumption rules. Everything else in
 `(local-only)/` is freeform.
 
+## The `overlays/` store
+
+There is a third class of file beyond *tracked-by-the-umbrella* and
+*untracked `(local-only)/`*: files that conceptually belong **inside a
+child repo** but that the child repo doesn't want to track — drafts,
+session-starter queues, in-flight notes. The umbrella's `.gitignore`
+hides the child dir, and the child's own `.gitignore` ignores them, so
+without help they stay machine-local and never sync.
+
+The **overlay store** closes that gap. The umbrella reserves a
+top-level `overlays/` directory that mirrors the child-repo layout:
+
+```text
+<workspace-root>/
+├── overlays/
+│   └── heddle/
+│       ├── session-starters/                  ← whole directory
+│       │   └── A-design-chat.md
+│       └── notes-architecture.md
+└── heddle/                                     ← gitignored from umbrella
+    ├── session-starters → ../overlays/heddle/session-starters/   (symlink)
+    └── notes-architecture.md → ../overlays/heddle/notes-architecture.md
+```
+
+**The overlay file is the source of truth.** The child repo's working
+tree gets a symlink pointing back into `overlays/<repo>/<path>`, so the
+file is tracked by the *umbrella* while still appearing at its logical
+location inside the child. Editing through the child path transparently
+edits the umbrella-tracked file. The child repo's
+`.git/info/exclude` (a local, uncommitted ignore) hides the symlink so
+the child's own `git status` stays clean. The rule is simply: *anything
+under `overlays/<repo>/...` overlays onto `<repo>/...`* — the manifest
+does not enumerate overlay paths; the tree is self-describing.
+
+**Two use cases it serves:**
+
+- **Migrating a legacy project into the workspace** while preserving its
+  untracked, in-flight artifacts portably across machines. (Example:
+  the `IranTransitionProject` workspace overlays `baseline/staging`
+  onto `overlays/baseline/staging/`.)
+- **Development-transient files** whose natural home is inside a repo
+  but where repo-tracking would be wrong.
+
+**Adding one is always explicit** — `sync` never auto-promotes:
+
+- `workspace status` surfaces *overlay candidates*: per child repo, the
+  untracked files that aren't already overlay symlinks, so you can see
+  what's promotable without searching.
+- `workspace overlay add <repo>/<path>` moves the file into
+  `overlays/<repo>/`, replaces the original with the symlink, updates
+  the child's `.git/info/exclude`, and prints the `git add` command to
+  commit the overlay file in the umbrella.
+- `workspace overlay rm <repo>/<path>` reverses it — moves the file
+  back to a real (untracked) file in the child repo.
+- On a second machine the round-trip is `git pull` (in the umbrella) →
+  `workspace sync`, which walks `overlays/` and recreates every symlink
+  from the now-present overlay files.
+
+Symlinks are the only mode implemented today; they assume a
+POSIX-friendly host (Windows native symlinks need Developer Mode or
+elevation). Full design, edge cases, and the eventual `--copy` mode are
+in [`docs/WORKSPACE_SYNC_DESIGN.md`](../docs/WORKSPACE_SYNC_DESIGN.md)
+"The overlay mechanism".
+
 ## Cross-repo git operations
 
 The umbrella tracks workspace-level files only; each sibling is its
@@ -209,6 +273,8 @@ Full reference in `docs/WORKSPACE_SYNC_DESIGN.md`. Briefly:
 | `workspace rm <path>` | Remove a manifest entry (working tree untouched). |
 | `workspace doctor` | Verify each manifest remote is reachable and `.gitignore` covers every entry. |
 | `workspace agent-adapters install` | Install thin adapters from canonical Heddle skills/instructions into coding-agent discovery paths. |
+| `workspace overlay add <repo>/<path>` | Promote an untracked child-repo file/dir into the umbrella's `overlays/` store; replaces the original with a symlink. See "The `overlays/` store". |
+| `workspace overlay rm <repo>/<path>` | Demote an overlay back to a real (untracked) file in the child repo. |
 
 ## Sibling conventions to know
 
