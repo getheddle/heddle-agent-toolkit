@@ -18,6 +18,8 @@ format model.
 ### Changed
 
 - Formalized the **Middleware Lane** pattern in `anchors/CONTRACT_MAP.md` and added it as the 9th Red Line in `anchors/INVARIANTS.md`. This change centralizes the policy for underscore-prefixed envelope keys and provides a cross-reference to the framework invariant in the `heddle` repository.
+- **Workspace-root `AGENTS.md` is now generated from a single template.** `install.sh` copies `templates/workspace-init/AGENTS.md` (substituting the workspace name) instead of maintaining a divergent heredoc — the two had already drifted. The template absorbed the heredoc-only "Further tuning" (plugin + MCP) section, so drift between the two sources is now structurally impossible.
+  - **Migration:** existing workspaces keep the root `AGENTS.md` produced by the previous `install.sh` (it predates this merge — no feature/maintenance split, no `repo-init` pointer), because `install.sh` only writes that file when absent. To adopt the canonical template: port any local edits, delete the root `AGENTS.md`, and re-run `./heddle-workspace/install.sh --workspace .` — or merge the differences by hand.
 
 ### Fixed
 
@@ -30,6 +32,20 @@ format model.
   ordinary-repo passthrough, carve-out + hidden-dir filtering).
 
 ### Added
+
+- **Methodology bindings (B2 + B5)** from `chat-first-project-development.md` v0.4:
+  - `templates/repo-init/AGENTS.md` — a repo-level `AGENTS.md` template
+    demonstrating the nested-AGENTS.md *extend, don't restate* pattern, with
+    the context-file precedence rule.
+  - A **Repo-level discovery** column in `docs/AGENT_ADAPTERS.md`, classifying
+    each of the 12 adapters as hierarchical / repo-scoped / launch-dir
+    (verified against current vendor docs 2026-05-27).
+  - A `friction` audit type in `docs/AUDITS.md` — the retrospective form of the
+    anti-bureaucracy guardrail — targeting the workspace artifact set with
+    `runtime: audit-mcp (pending)`.
+  - The `methodology-<name>` skill-naming convention, recorded in `skills/INDEX.md`.
+  - `templates/workspace-init/findings-from-chat.md` — a findings-inbox seed for
+    the session-close ritual.
 
 - **`anchors/AGENTIC-DEV.md`** — the clean-slate principle (development
   under bounded vigilance with AI assistance) lands at its canonical home

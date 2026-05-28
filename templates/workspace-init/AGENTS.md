@@ -79,7 +79,9 @@ If you are not sure which kind your task is:
 | `roadmap/` + `session-starters/` + `audits/` | Repo-internal CHANGELOG + issues |
 
 For repo-specific verification commands and module layout, read the
-relevant sibling's own `AGENTS.md`.
+relevant sibling's own `AGENTS.md`. Bootstrap a sibling's repo-level
+`AGENTS.md` from `heddle-workspace/templates/repo-init/AGENTS.md` — it
+*extends* this root file rather than restating it.
 
 ## VSCode
 
@@ -91,3 +93,55 @@ siblings.
 `heddle-workspace/anchors/WORKSPACE.md` — the technical
 reference for workspace detection, cross-repo git conventions, and
 path conventions.
+
+## Further tuning of the Claude Code environment
+
+Two optional, recommended add-ons for this workspace:
+
+### `claude-code-setup` plugin
+
+The `claude-code-setup` plugin (from the
+`claude-plugins-official` marketplace) provides a meta-skill —
+`/claude-code-setup:claude-automation-recommender` — that analyzes
+this workspace and suggests Claude Code automations (hooks,
+subagents, skills, MCP servers) tailored to what's checked out. Run
+it after adding a new sibling repo, or when you want a second
+opinion on workflow gaps.
+
+Install once per Claude Code user:
+
+```
+/plugin marketplace add claude-plugins-official
+/plugin install claude-code-setup@claude-plugins-official
+```
+
+Then invoke from any session at this workspace root:
+
+```
+/claude-code-setup:claude-automation-recommender
+```
+
+It only reads the workspace; it does not modify files. Ask Claude
+to implement specific recommendations.
+
+### MCP servers
+
+Two MCP servers materially improve Heddle-family work:
+
+| Server | Why |
+|---|---|
+| `context7` | Live docs for Pydantic, nats-py, structlog, DuckDB, LanceDB, etc. — avoids stale-recall errors. No auth. |
+| `github` | Cross-repo PR/issue/CI access for `getheddle/*` repos; pairs well with `/cross-repo-pr`. Reads token from `gh auth token` at MCP startup. |
+
+The toolkit ships a project-scoped `.mcp.json` template with both
+servers pre-configured. Drop it in at the workspace root with:
+
+```
+./heddle-workspace/install.sh --workspace --mcp .
+```
+
+(Or run `--mcp` alone if the workspace is already installed.) See
+`heddle-workspace/mcp/README.md` for prerequisites (`npx`,
+authenticated `gh`) and manual-merge guidance when a `.mcp.json`
+already exists. See `hooks/README.md` for the hooks template that
+complements the MCP servers.

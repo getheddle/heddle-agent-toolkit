@@ -30,3 +30,20 @@ Install adapters from a workspace root:
 ```bash
 ./heddle-workspace/bin/install-agent-adapters --workspace .
 ```
+
+## Naming conventions
+
+Heddle-domain skills keep their existing names — a mix of `heddle-*`
+(`heddle-orient`, `heddle-invariants`, …) and unprefixed concept names
+(`audit-cycle`, `cross-repo-pr`, `warp-adr`).
+
+Skills that encode **portable methodology** — rules from
+`chat-first-project-development.md` rather than Heddle-specific domain
+knowledge — carry a `methodology-<name>` prefix. The prefix keeps them
+cleanly separable so they can be extracted into a standalone
+portable-methodology repo once a second adopter appears.
+
+No methodology-binding skills exist yet; the convention is recorded here
+for the first to land (likely candidates: `methodology-adversarial-gate`,
+`methodology-session-close`) — when and if they earn their place via
+demonstrated friction.

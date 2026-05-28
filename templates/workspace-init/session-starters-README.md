@@ -9,6 +9,10 @@ executable work. Two kinds of files live here:
    and optimization work organized as a cycle of sibling sessions.
    Each cycle lives in its own subfolder.
 
+For the brief-authoring discipline that produces these sessions — the
+R1 brief, the review rounds, then implementation — see *The cycle-brief
+protocol* in `chat-first-project-development.md` v0.4.
+
 ## Maintenance-cycle pattern
 
 A maintenance cycle starts when a **review artifact** lands. A review
