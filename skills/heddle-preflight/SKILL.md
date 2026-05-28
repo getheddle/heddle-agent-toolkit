@@ -148,6 +148,49 @@ judge whether the change is exempt (e.g., a refactor whose paths
 touched `src/` but whose behaviour is unchanged). Prompt the user
 before letting the commit proceed without an entry.
 
+## Installed-workspace impact (toolkit changes)
+
+`heddle-workspace` is upstream to every workspace that has installed it.
+When a change to **this** repo touches consumer-facing installed
+artifacts, assess whether already-installed workspaces need a migration
+note or an upgrade guide — they won't pick the change up on their own.
+
+Two propagation classes, because they age differently:
+
+- **Symlinked artifacts** — `skills/`, `agents/`, `anchors/`, and the
+  docs they reference. `install.sh` / `workspace agent-adapters install`
+  refresh these symlinks on the next run, so they propagate for free.
+  No migration note needed.
+- **Generated / copied artifacts** — the workspace-root `AGENTS.md`,
+  `<name>.code-workspace`, `.mcp.json`, `.claude/settings.json`, and any
+  `templates/workspace-init/*` seed. `install.sh` writes these **only
+  when absent** and never overwrites them, so a change to a template, to
+  `install.sh`, or to the *shape* of one of these files does **not**
+  reach installed workspaces.
+
+If the staged diff touches `templates/`, `install.sh`, `hooks/`, or
+`mcp/` — or otherwise changes the shape of a generated/copied artifact —
+the change needs one of:
+
+- a **`Migration:`** sub-note on its `CHANGELOG.md` entry stating the
+  manual step a consumer takes (e.g. "delete the root `AGENTS.md` and
+  re-run `install.sh`"), and/or
+- an upgrade guide or migrator when the manual step is non-trivial — see
+  the `workspace-upgrade` roadmap track for the planned mechanism
+  (version-stamped manifest + `workspace doctor` drift detection +
+  `workspace upgrade`).
+
+Mechanically (run from the toolkit repo root):
+
+```bash
+git diff --staged --name-only | grep -E '^(templates/|install\.sh|hooks/|mcp/)' \
+    && echo "toolkit change touches installed artifacts — needs a Migration: note or upgrade guidance?" \
+    || true
+```
+
+Like the CHANGELOG check, this is a prompt-the-user warning, not a hard
+block — symlinked-only changes legitimately need nothing.
+
 ## Cross-repo changes
 
 If your change touches more than one repo:

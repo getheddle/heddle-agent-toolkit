@@ -13,6 +13,15 @@ clarifications) and CI/tooling adjustments are exempt. See `AGENTS.md`
 cross-repo coherence; see this `CHANGELOG.md` itself for the entry-
 format model.
 
+Entries that change the *shape* of a **generated or copied** installed
+artifact — the workspace-root `AGENTS.md`, `<name>.code-workspace`,
+`.mcp.json`, `.claude/settings.json`, or a `templates/` seed — carry a
+**`Migration:`** sub-note stating the manual step a consumer takes to
+adopt the change. These files are written only-if-absent and never
+auto-refresh, so already-installed workspaces won't get the change
+otherwise. Symlinked artifacts (skills, agents, anchors) propagate on
+the next `install.sh` and need no note.
+
 ## [Unreleased]
 
 ### Changed
@@ -20,6 +29,7 @@ format model.
 - Formalized the **Middleware Lane** pattern in `anchors/CONTRACT_MAP.md` and added it as the 9th Red Line in `anchors/INVARIANTS.md`. This change centralizes the policy for underscore-prefixed envelope keys and provides a cross-reference to the framework invariant in the `heddle` repository.
 - **Workspace-root `AGENTS.md` is now generated from a single template.** `install.sh` copies `templates/workspace-init/AGENTS.md` (substituting the workspace name) instead of maintaining a divergent heredoc — the two had already drifted. The template absorbed the heredoc-only "Further tuning" (plugin + MCP) section, so drift between the two sources is now structurally impossible.
   - **Migration:** existing workspaces keep the root `AGENTS.md` produced by the previous `install.sh` (it predates this merge — no feature/maintenance split, no `repo-init` pointer), because `install.sh` only writes that file when absent. To adopt the canonical template: port any local edits, delete the root `AGENTS.md`, and re-run `./heddle-workspace/install.sh --workspace .` — or merge the differences by hand.
+- **`/heddle-preflight` now checks installed-workspace impact.** A new step flags toolkit changes that touch `templates/`, `install.sh`, `hooks/`, or `mcp/` — generated/copied artifacts that don't auto-refresh in installed workspaces — and asks for a `Migration:` note or upgrade guidance. The `CHANGELOG.md` preamble now documents the migration-note convention.
 
 ### Fixed
 
